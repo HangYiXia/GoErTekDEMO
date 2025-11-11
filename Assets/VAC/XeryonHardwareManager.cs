@@ -74,7 +74,7 @@ public class XeryonHardwareManager : MonoBehaviour
     private bool _xh_initialized = false;
     private int _xh_logicalL = 0;
     private int _xh_logicalR = 0;
-    private int _xh_dir = 1; // 1 = 增加, -1 = 减少
+    private int _xh_dir = 50; // 1 = 增加, -1 = 减少
     private const int _xh_minLogical = 0;
     private const int _xh_maxLogical = 600; // 对应物理范围 -6000 .. +6000 (step 20)
 
@@ -158,9 +158,7 @@ public class XeryonHardwareManager : MonoBehaviour
 
     #region 配置与状态管理 (Config/PlayerPrefs)
 
-    /// <summary>
-    /// 从 config.txt 加载硬件端口配置。
-    /// </summary>
+
     private void LoadConfig()
     {
         Debug.Log("XeryonHardwareManager: LoadConfig START");
@@ -189,9 +187,7 @@ public class XeryonHardwareManager : MonoBehaviour
         Debug.Log("XeryonHardwareManager: LoadConfig END");
     }
 
-    /// <summary>
-    /// 将当前硬件状态保存到 PlayerPrefs。
-    /// </summary>
+
     public void SetSaveToPrefs()
     {
         PlayerPrefs.SetInt("curXeryonL", curXeryonL);
@@ -201,9 +197,7 @@ public class XeryonHardwareManager : MonoBehaviour
         Debug.Log("XeryonHardwareManager: Settings Saved.");
     }
 
-    /// <summary>
-    /// 从 PlayerPrefs 加载硬件状态。
-    /// </summary>
+
     private void LoadStateFromPrefs()
     {
         curXeryonL = PlayerPrefs.GetInt("curXeryonL");
@@ -217,17 +211,13 @@ public class XeryonHardwareManager : MonoBehaviour
             + " curVariFocal | " + curVariFocal
             );
         
-        // 实际应用这些值 (SetXeryonL/R) 的逻辑移至 Start()，
-        // 因为必须在硬件初始化 (IStart) 之后才能调用。
+
     }
 
     #endregion
     
 
     #region XeryonControl (DLLImport 和 C# 封装)
-    // ---------------------------------------------------------
-    // 这部分是从 VACController.cs 中完整剪切并粘贴过来的
-    // ---------------------------------------------------------
 
     public IntPtr XC_CreateInstance(int port)
     {
@@ -353,42 +343,34 @@ public class XeryonHardwareManager : MonoBehaviour
         }
     }
 
-    //  ҪָںͲ
     [DllImport("XeryonControl", CallingConvention = CallingConvention.Cdecl)]
     private static extern IntPtr CreateInstance(int port, int baudrate);
+
     [DllImport("XeryonControl", CallingConvention = CallingConvention.Cdecl)]
     private static extern void DestoryInstance(IntPtr ctrlPtr);
 
-    // ʼͨţȡļ, ҪIAddAxisٵãЧ
     [DllImport("XeryonControl", CallingConvention = CallingConvention.Cdecl)]
     private static extern void IStart(IntPtr ctrlPtr);
 
-    // λã¶ȡļ
     [DllImport("XeryonControl", CallingConvention = CallingConvention.Cdecl)]
     private static extern void IReset(IntPtr ctrlPtr);
 
-    // λãرͨ
     [DllImport("XeryonControl", CallingConvention = CallingConvention.Cdecl)]
     private static extern void IStop(IntPtr ctrlPtr);
 
-    // һ,Ҫָ豸
     [DllImport("XeryonControl", CallingConvention = CallingConvention.Cdecl)]
     private static extern void IAddAxis(IntPtr ctrlPtr, _Direction dir, _Stage stage = _Stage.XLA_1250);
 
-    // λãλΪum, Direction: X Y Z
     [DllImport("XeryonControl", CallingConvention = CallingConvention.Cdecl)]
     private static extern void ISetDPOS(IntPtr ctrlPtr, _Direction dir, double val_um);
 
-    // ȡλãλΪum, Direction: X Y Z
     [DllImport("XeryonControl", CallingConvention = CallingConvention.Cdecl)]
     private static extern double IGetDPOS(IntPtr ctrlPtr, _Direction dir);
 
-    // ƶһstepλãλΪum, Direction: X Y Z
     [DllImport("XeryonControl", CallingConvention = CallingConvention.Cdecl)]
     private static extern void IStep(IntPtr ctrlPtr, _Direction dir, double val_um);
 
 
-    // ķ
     enum _Direction
     {
         DIR_X = 0,
@@ -396,7 +378,6 @@ public class XeryonHardwareManager : MonoBehaviour
         DIR_Z,
     };
 
-    // ƽ̨
     enum _Stage
     {
         XLS_312 = 0,
