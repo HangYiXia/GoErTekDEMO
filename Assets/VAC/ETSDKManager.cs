@@ -29,8 +29,8 @@ public class ETSDKManager : MonoBehaviour
 
     void Update()
     {
-        Texture2D textureEt0, textureEt1, textureVst;
-        if (!ETSDK.ET_GetImages(out textureEt0, out textureEt1, out textureVst))
+        Texture2D textureEt0, textureEt1;
+        if (!ETSDK.ET_GetImages(out textureEt0, out textureEt1))
         {
             Debug.Log("ET_GetImages() failed.");
             return;
@@ -44,8 +44,13 @@ public class ETSDKManager : MonoBehaviour
             timer = 0f;
             LogGazeData();
         }
-
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ETSDK.ET_StopStreaming();
+            ETSDK.ET_ETSDKExitAndRelease();
+        }
     }
+
     private void LogGazeData()
     {
         if (ETSDK.ET_GetTrackResult(out ETSDK.EtResult3D result))

@@ -222,12 +222,12 @@ public class ETSDK : MonoBehaviour
         return ETPlugin_StopStreaming();
     }
 
-    static public bool ET_GetImages(out Texture2D textureEt0, out Texture2D textureEt1, out Texture2D textureVst)
+    static public bool ET_GetImages(out Texture2D textureEt0, out Texture2D textureEt1)
     {
         Debug.Log("ET_GetImages()");
         InitImagesBuffer(); // 确保已初始化
         
-        int count = 3; // 我们期望 3 张图像
+        int count = 2; // 我们期望 2 张图像
         bool flag = ETPlugin_GetETImages(m_matDescriptors, ref count);
         
         if (flag && count > 0)
@@ -237,15 +237,11 @@ public class ETSDK : MonoBehaviour
                 // 1. 从非托管内存 (m_bufferX) 复制到 托管数组 (m_imageX)
                 Marshal.Copy(m_bufferEt0, m_imageEt0, 0, m_imageEt0.Length);
                 Marshal.Copy(m_bufferEt1, m_imageEt1, 0, m_imageEt1.Length);
-                Marshal.Copy(m_bufferVst, m_imageVst, 0, m_imageVst.Length);
-
                 // 2. 加载到 Texture2D
                 m_textureEt0.LoadRawTextureData(m_imageEt0);
                 m_textureEt0.Apply();
                 m_textureEt1.LoadRawTextureData(m_imageEt1);
                 m_textureEt1.Apply();
-                m_textureVst.LoadRawTextureData(m_imageVst);
-                m_textureVst.Apply();
             }
             catch (Exception ex)
             {
@@ -256,7 +252,6 @@ public class ETSDK : MonoBehaviour
         
         textureEt0 = m_textureEt0;
         textureEt1 = m_textureEt1;
-        textureVst = m_textureVst;
         return flag;
     }
 
