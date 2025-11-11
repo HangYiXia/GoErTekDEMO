@@ -15,21 +15,7 @@ public class ETSDKManager : MonoBehaviour
     [Header("ETSDK Image Targets")]
     public RawImage rawImageEt0;
     public RawImage rawImageEt1;
-
-    public Transform focusPoint;
-    public Transform eyeGaze;
-    public VACController vacController;
-    public float test = 1f;
-
-    #region 
-    private float eyeGazeX;
-    private float eyeGazeY;
-    private Vector3 origin, direction;
-    public float Max;
-    public float Min;
-    #endregion         
-    public Transform testpoint;
-
+    private float timer = 0f;
 
     void Start()
     {
@@ -52,48 +38,20 @@ public class ETSDKManager : MonoBehaviour
         rawImageEt0.texture = textureEt0;
         rawImageEt1.texture = textureEt1;
 
-
-        ETSDK.EtResult3D result = new ETSDK.EtResult3D();
-        if (ETSDK.ET_GetTrackResult(out result))
+        timer += Time.deltaTime;
+        if (timer >= 2.0f)
         {
-            //eyeGaze.localPosition = result.gazeOrigin;
-
-            origin = result.gazeOrigin / 1000;
-            direction = result.gazeDirection / 1000;
-
-
-            testpoint.localPosition = origin + direction * (test - origin.z) / direction.z;
-
-            eyeGazeX = Mathf.Atan(testpoint.localPosition.x / testpoint.localPosition.z) * 180 / Mathf.PI;
-            eyeGazeY = -Mathf.Atan(testpoint.localPosition.y / testpoint.localPosition.z) * 180 / Mathf.PI;
-
-            eyeGaze.transform.LookAt(testpoint);
-            eyeGaze.localPosition = origin;
-        }
-        else
-        {
-            eyeGazeX += Input.GetAxis("Mouse X");
-            eyeGazeY -= Input.GetAxis("Mouse Y");
-
-            eyeGazeX = Mathf.Clamp(eyeGazeX, Min, Max);
-            eyeGazeY = Mathf.Clamp(eyeGazeY, Min, Max);
-
-            eyeGaze.localEulerAngles = new Vector3(eyeGazeY, eyeGazeX, 0);
+            timer = 0f;
+            LogGazeData();
         }
 
-        RaycastHit hitInfo;
-        if (Physics.Raycast(eyeGaze.position, eyeGaze.forward, out hitInfo))
+    }
+    private void LogGazeData()
+    {
+        if (ETSDK.ET_GetTrackResult(out ETSDK.EtResult3D result))
         {
-            //Debug.Log(hitInfo.point);
-            //Debug.Log(hitInfo.collider.name);
-            FocusTarget focusTarget = hitInfo.collider.GetComponent<FocusTarget>();
-            if (focusTarget)
-            {
-                focusTarget.FoucsOn();
-            }
+            Debug.Log("gazeOrigin: " + result.gazeOrigin.x + ", " + result.gazeOrigin.y + ", " + result.gazeOrigin.z);
+            Debug.Log("gazeDirection: " + result.gazeDirection.x + ", " + result.gazeDirection.y + ", " + result.gazeDirection.z);
         }
-        Debug.DrawRay(eyeGaze.position, eyeGaze.position + eyeGaze.forward * 10, Color.red);
-
-        focusPoint.position = hitInfo.point;
     }
 }
