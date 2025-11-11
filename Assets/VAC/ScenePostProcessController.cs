@@ -1,14 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
-/// <summary>
-/// (新) 场景后期处理控制器 (已解耦)
-/// 职责：
-/// 1. 管理 PostProcessLayer 和 PostProcessVolume 的引用。
-/// 2. 封装 SetFoveated(int enable) 逻辑，切换 Layer 状态。
-/// 3. 封装 UpdateDepthOfField(float depth) 逻辑，更新焦距。
-/// 4. 独立管理 curFoveated 状态的加载与保存 (PlayerPrefs)。
-/// </summary>
 public class ScenePostProcessController : MonoBehaviour
 {
     [Header("Post Processing Refs")]
@@ -20,7 +12,6 @@ public class ScenePostProcessController : MonoBehaviour
 
     void Awake()
     {
-        // 在启动时加载并应用 foveated 设置
         LoadStateFromPrefs();
     }
 
@@ -40,16 +31,11 @@ public class ScenePostProcessController : MonoBehaviour
         // 尝试获取景深设置
         if (processVolume.profile.TryGetSettings<DepthOfField>(out depth))
         {
-            // (逻辑从原 VACController.HandleAgentMoveComplete 移来)
             depth.focusDistance.value = Mathf.Sqrt(Mathf.Pow(agentDepth, 2) + Mathf.Pow(Camera.main.transform.position.y, 2));
             depth.focalLength.value = depth.focusDistance.value * 56.4f + 11f > 70 ? 70 : depth.focusDistance.value * 56.4f + 11f;
         }
     }
 
-    /// <summary>
-    /// (公共 API) 启用/禁用 foveated 渲染。
-    /// 当 enable=0 时，启用 PostProcessLayer。
-    /// </summary>
     public void SetFoveated(int enable)
     {
         curFoveated = enable;
@@ -60,17 +46,11 @@ public class ScenePostProcessController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// (公共 API) 将 curFoveated 状态保存到 PlayerPrefs。
-    /// </summary>
     public void SaveStateToPrefs()
     {
         PlayerPrefs.SetInt("curFoveated", curFoveated);
     }
 
-    /// <summary>
-    /// (公共 API) 从 PlayerPrefs 加载 curFoveated 状态并应用。
-    /// </summary>
     public void LoadStateFromPrefs()
     {
         curFoveated = PlayerPrefs.GetInt("curFoveated");

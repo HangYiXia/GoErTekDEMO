@@ -6,14 +6,6 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-/// <summary>
-/// Xeryon 硬件管理器 (已解耦)
-/// 职责：
-/// 1. 封装所有 XeryonControl.dll 的 PInvoke 调用。
-/// 2. 管理硬件连接的生命周期 (初始化, 启动, 停止, 销毁)。
-/// 3. 提供 SetXeryonL/R 和 SetVariFocal 的公共接口。
-/// 4. 加载和保存硬件相关的配置 (Ports, PlayerPrefs 状态)。
-/// </summary>
 public class XeryonHardwareManager : MonoBehaviour
 {
     // 硬件实例指针
@@ -78,6 +70,49 @@ public class XeryonHardwareManager : MonoBehaviour
             XC_DestoryInstance(ctrlPtrL);
             XC_DestoryInstance(ctrlPtrR);
         });
+    }
+
+    // 自动每3秒改变一次逻辑位置并发送到硬件
+    private float _xh_timer = 0f;
+    private bool _xh_initialized = false;
+    private int _xh_logicalL = 0;
+    private int _xh_logicalR = 0;
+    private int _xh_dir = 1; // 1 = 增加, -1 = 减少
+    private const int _xh_minLogical = 0;
+    private const int _xh_maxLogical = 600; // 对应物理范围 -6000 .. +6000 (step 20)
+
+    void Update()
+    {
+        // 延迟初始化：curXeryonL/R 在 Awake/LoadStateFromPrefs 中以物理值保存（um）
+        if (!_xh_initialized)
+        {
+            _xh_logicalL = Mathf.Clamp((curXeryonL + 6000) / 20, _xh_minLogical, _xh_maxLogical);
+            _xh_logicalR = Mathf.Clamp((curXeryonR + 6000) / 20, _xh_minLogical, _xh_maxLogical);
+            _xh_initialized = true;
+        }
+
+        _xh_timer += Time.deltaTime;
+        if (_xh_timer >= 3f)
+        {
+            _xh_timer = 0f;
+
+            // 以逻辑单位改变（你可以改为其他策略，例如随机）
+            _xh_logicalL += _xh_dir;
+            _xh_logicalR -= _xh_dir;
+
+            // 碰到边界则反向
+            if (_xh_logicalL >= _xh_maxLogical || _xh_logicalL <= _xh_minLogical)
+            {
+                _xh_dir = -_xh_dir;
+            }
+
+            _xh_logicalL = Mathf.Clamp(_xh_logicalL, _xh_minLogical, _xh_maxLogical);
+            _xh_logicalR = Mathf.Clamp(_xh_logicalR, _xh_minLogical, _xh_maxLogical);
+
+            // 发送到硬件（SetXeryon 方法会把逻辑值映射为物理值并写入硬件）
+            SetXeryonL(_xh_logicalL);
+            SetXeryonR(_xh_logicalR);
+        }
     }
 
     #endregion

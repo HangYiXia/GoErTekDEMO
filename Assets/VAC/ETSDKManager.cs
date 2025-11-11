@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI; // 1. 包含 UI 命名空间以使用 RawImage
+using System;
+using System.Runtime.InteropServices;
 
 /// <summary>
 /// (新) ETSDK 管理器 (已解耦)
@@ -14,10 +16,20 @@ public class ETSDKManager : MonoBehaviour
     public RawImage rawImageEt0;
     public RawImage rawImageEt1;
 
-    private string mode;
-    private float x;
-    private float y;
-    private float z;
+    public Transform focusPoint;
+    public Transform eyeGaze;
+    public VACController vacController;
+    public float test = 1f;
+
+    #region 
+    private float eyeGazeX;
+    private float eyeGazeY;
+    private Vector3 origin, direction;
+    public float Max;
+    public float Min;
+    #endregion         
+    public Transform testpoint;
+
 
     void Start()
     {
@@ -25,41 +37,63 @@ public class ETSDKManager : MonoBehaviour
         {
             Debug.Log("Failed to init.");
         }
+        ETSDK.ET_StartStreaming();
     }
 
-    /// <summary>
-    /// Update 负责从 ETSDK 拉取图像并更新 RawImages。
-    /// </summary>
+
     void Update()
     {
-        // 1. 检查引用是否存在
-        if (rawImageEt0 == null || rawImageEt1 == null)
-        {
-            // 如果不需要显示图像，可以禁用此组件以节省性能
-            this.enabled = false;
-            return;
-        }
-
-        // 2. (逻辑从原 VACController.Update 移来)
         Texture2D textureEt0, textureEt1, textureVst;
-        // if (ETSDK.ET_GetImages(out textureEt0, out textureEt1, out textureVst) == false)
-        // {
-        //     Debug.Log("ET_GetImages() failed.");
-        //     return;
-        // }
-        //if (ETSDK.ET_GetImages(out textureEt0, out textureEt1, out textureVst))
-        //{
-        //    ETSDK.ET_SaveImagesAndTarget(mode, x, y, z);
-        //    Debug.Log("mode: " + mode + " x: " + x + " y: " + y + " z: " + z);
-        //}
         if (!ETSDK.ET_GetImages(out textureEt0, out textureEt1, out textureVst))
         {
             Debug.Log("ET_GetImages() failed.");
             return;
         }
-
-        // 3. 应用纹理
         rawImageEt0.texture = textureEt0;
         rawImageEt1.texture = textureEt1;
+
+
+        ETSDK.EtResult3D result = new ETSDK.EtResult3D();
+        if (ETSDK.ET_GetTrackResult(out result))
+        {
+            //eyeGaze.localPosition = result.gazeOrigin;
+
+            origin = result.gazeOrigin / 1000;
+            direction = result.gazeDirection / 1000;
+
+
+            testpoint.localPosition = origin + direction * (test - origin.z) / direction.z;
+
+            eyeGazeX = Mathf.Atan(testpoint.localPosition.x / testpoint.localPosition.z) * 180 / Mathf.PI;
+            eyeGazeY = -Mathf.Atan(testpoint.localPosition.y / testpoint.localPosition.z) * 180 / Mathf.PI;
+
+            eyeGaze.transform.LookAt(testpoint);
+            eyeGaze.localPosition = origin;
+        }
+        else
+        {
+            eyeGazeX += Input.GetAxis("Mouse X");
+            eyeGazeY -= Input.GetAxis("Mouse Y");
+
+            eyeGazeX = Mathf.Clamp(eyeGazeX, Min, Max);
+            eyeGazeY = Mathf.Clamp(eyeGazeY, Min, Max);
+
+            eyeGaze.localEulerAngles = new Vector3(eyeGazeY, eyeGazeX, 0);
+        }
+
+        RaycastHit hitInfo;
+        if (Physics.Raycast(eyeGaze.position, eyeGaze.forward, out hitInfo))
+        {
+            //Debug.Log(hitInfo.point);
+            //Debug.Log(hitInfo.collider.name);
+            FocusTarget focusTarget = hitInfo.collider.GetComponent<FocusTarget>();
+            if (focusTarget)
+            {
+                focusTarget.FoucsOn();
+            }
+        }
+        Debug.DrawRay(eyeGaze.position, eyeGaze.position + eyeGaze.forward * 10, Color.red);
+
+        focusPoint.position = hitInfo.point;
     }
 }
