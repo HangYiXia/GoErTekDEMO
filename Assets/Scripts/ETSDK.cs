@@ -109,18 +109,14 @@ public class ETSDK : MonoBehaviour
     // 图像属性 (基于旧版 ETSDK.cs)
     private const int ET_WIDTH = 400;
     private const int ET_HEIGHT = 400;
-    private const int VST_WIDTH = 1280;
-    private const int VST_HEIGHT = 720;
-
     // 托管的 byte[] 缓冲区
-    private static byte[] m_imageEt0 = null, m_imageEt1 = null, m_imageVst = null;
+    private static byte[] m_imageEt0 = null, m_imageEt1 = null;
     // 目标 Texture2D
-    private static Texture2D m_textureEt0 = null, m_textureEt1 = null, m_textureVst = null;
+    private static Texture2D m_textureEt0 = null, m_textureEt1 = null;
 
     // 非托管内存指针
     private static IntPtr m_bufferEt0 = IntPtr.Zero;
     private static IntPtr m_bufferEt1 = IntPtr.Zero;
-    private static IntPtr m_bufferVst = IntPtr.Zero;
 
     // MatDescriptor 数组
     private static MatDescriptor[] m_matDescriptors = null;
@@ -132,17 +128,14 @@ public class ETSDK : MonoBehaviour
             // 1. 分配托管 byte 数组
             m_imageEt0 = new byte[ET_WIDTH * ET_HEIGHT];
             m_imageEt1 = new byte[ET_WIDTH * ET_HEIGHT];
-            m_imageVst = new byte[VST_WIDTH * VST_HEIGHT * 3];
 
             // 2. 创建 Texture2D
             m_textureEt0 = new Texture2D(ET_WIDTH, ET_HEIGHT, TextureFormat.Alpha8, false);
             m_textureEt1 = new Texture2D(ET_WIDTH, ET_HEIGHT, TextureFormat.Alpha8, false);
-            m_textureVst = new Texture2D(VST_WIDTH, VST_HEIGHT, TextureFormat.RGB24, false);
 
             // 3. 分配非托管内存
             m_bufferEt0 = Marshal.AllocHGlobal(m_imageEt0.Length);
             m_bufferEt1 = Marshal.AllocHGlobal(m_imageEt1.Length);
-            m_bufferVst = Marshal.AllocHGlobal(m_imageVst.Length);
 
             // 4. 创建 MatDescriptor 数组并指向非托管内存
             m_matDescriptors = new MatDescriptor[3];
@@ -160,13 +153,6 @@ public class ETSDK : MonoBehaviour
                 type = CV_8UC1, 
                 data = m_bufferEt1 
             };
-            m_matDescriptors[2] = new MatDescriptor 
-            { 
-                rows = VST_HEIGHT, 
-                cols = VST_WIDTH, 
-                type = CV_8UC3, 
-                data = m_bufferVst 
-            };
         }
     }
 
@@ -177,19 +163,15 @@ public class ETSDK : MonoBehaviour
             // 释放非托管内存
             Marshal.FreeHGlobal(m_bufferEt0);
             Marshal.FreeHGlobal(m_bufferEt1);
-            Marshal.FreeHGlobal(m_bufferVst);
 
             // 重置所有引用
             m_bufferEt0 = IntPtr.Zero;
             m_bufferEt1 = IntPtr.Zero;
-            m_bufferVst = IntPtr.Zero;
             m_matDescriptors = null;
             m_imageEt0 = null;
             m_imageEt1 = null;
-            m_imageVst = null;
             m_textureEt0 = null;
             m_textureEt1 = null;
-            m_textureVst = null;
         }
     }
 

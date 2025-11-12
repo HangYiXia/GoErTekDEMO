@@ -57,6 +57,10 @@ public class ETSDKManager : MonoBehaviour
         {
             Debug.Log("gazeOrigin: " + result.gazeOrigin.x + ", " + result.gazeOrigin.y + ", " + result.gazeOrigin.z);
             Debug.Log("gazeDirection: " + result.gazeDirection.x + ", " + result.gazeDirection.y + ", " + result.gazeDirection.z);
+            Debug.Log("gazeOriginL: " + result.gazeOriginL.x + ", " + result.gazeOriginL.y + ", " + result.gazeOriginL.z);
+            Debug.Log("gazeDirectionL: " + result.gazeDirectionL.x + ", " + result.gazeDirectionL.y + ", " + result.gazeDirectionL.z);
+            Debug.Log("gazeOriginR: " + result.gazeOriginR.x + ", " + result.gazeOriginR.y + ", " + result.gazeOriginR.z);
+            Debug.Log("gazeDirectionR: " + result.gazeDirectionR.x + ", " + result.gazeDirectionR.y + ", " + result.gazeDirectionR.z);
         }
     }
 }
