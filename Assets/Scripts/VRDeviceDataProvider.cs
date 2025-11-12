@@ -24,6 +24,12 @@ public class VRDeviceDataProvider : MonoBehaviour
     [SerializeField]
     private Transform VRCamera;
 
+
+    private void Awake()
+    {
+        UnityEngine.Rendering.TextureXR.maxViews = 2;
+    }
+
     public Quaternion GetVRCameraWorldRoataion()
     {
         return VRCamera.transform.rotation;

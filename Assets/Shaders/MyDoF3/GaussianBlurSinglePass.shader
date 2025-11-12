@@ -2,14 +2,13 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
 {
     Properties
     {
-        _MainTex ("Main Texture", 2D) = "white" {}
+        _MainTex ("Main Texture", 2DArray) = "white" {}
         _Radius ("Blur Radius", Range(0, 60)) = 3
     }
 
     HLSLINCLUDE
     #pragma target 4.5
-    #pragma only_renderers d3d11 vulkan metal
-
+    #pragma only_renderers d3d11 d3d12 vulkan metal
     #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
     #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
 

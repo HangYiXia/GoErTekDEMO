@@ -14,7 +14,7 @@ public sealed class MyGaussianBlur : CustomPostProcessVolumeComponent, IPostProc
 
     // 定义后处理的注入点，AfterPostProcess 表示在所有内置后处理之后执行
     public override CustomPostProcessInjectionPoint injectionPoint =>
-        CustomPostProcessInjectionPoint.AfterPostProcess;
+        CustomPostProcessInjectionPoint.AfterOpaqueAndSky;
 
     // 材质实例
     private Material m_Material;
