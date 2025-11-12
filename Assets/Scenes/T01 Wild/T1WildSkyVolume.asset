@@ -281,6 +281,37 @@ MonoBehaviour:
   enabled:
     m_OverrideState: 1
     m_Value: 0
+--- !u!114 &-2291170590703320050
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7119cb5cd407e5f4dad431ea37f55b17, type: 3}
+  m_Name: MyGaussianBlurSinglePass
+  m_EditorClassIdentifier: 
+  active: 1
+  radius:
+    m_OverrideState: 1
+    m_Value: 60
+  nearBlurStart:
+    m_OverrideState: 1
+    m_Value: 8
+  nearBlurEnd:
+    m_OverrideState: 1
+    m_Value: 9
+  farBlurStart:
+    m_OverrideState: 1
+    m_Value: 10
+  farBlurEnd:
+    m_OverrideState: 1
+    m_Value: 20
+  enabled:
+    m_OverrideState: 1
+    m_Value: 1
 --- !u!114 &-1065216639879704067
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -329,9 +360,7 @@ MonoBehaviour:
   - {fileID: -1065216639879704067}
   - {fileID: 8468756425897094408}
   - {fileID: -7194291193526483275}
-  - {fileID: -7136431641795783428}
-  - {fileID: -4331429661209049123}
-  - {fileID: 11590101117236096}
+  - {fileID: -2291170590703320050}
 --- !u!114 &11590101117236096
 MonoBehaviour:
   m_ObjectHideFlags: 3
