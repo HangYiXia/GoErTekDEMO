@@ -80,36 +80,36 @@ public class XeryonHardwareManager : MonoBehaviour
 
     void Update()
     {
-        // 延迟初始化：curXeryonL/R 在 Awake/LoadStateFromPrefs 中以物理值保存（um）
-        if (!_xh_initialized)
-        {
-            _xh_logicalL = Mathf.Clamp((curXeryonL + 6000) / 20, _xh_minLogical, _xh_maxLogical);
-            _xh_logicalR = Mathf.Clamp((curXeryonR + 6000) / 20, _xh_minLogical, _xh_maxLogical);
-            _xh_initialized = true;
-        }
+        //// 延迟初始化：curXeryonL/R 在 Awake/LoadStateFromPrefs 中以物理值保存（um）
+        //if (!_xh_initialized)
+        //{
+        //    _xh_logicalL = Mathf.Clamp((curXeryonL + 6000) / 20, _xh_minLogical, _xh_maxLogical);
+        //    _xh_logicalR = Mathf.Clamp((curXeryonR + 6000) / 20, _xh_minLogical, _xh_maxLogical);
+        //    _xh_initialized = true;
+        //}
 
-        _xh_timer += Time.deltaTime;
-        if (_xh_timer >= 3f)
-        {
-            _xh_timer = 0f;
+        //_xh_timer += Time.deltaTime;
+        //if (_xh_timer >= 3f)
+        //{
+        //    _xh_timer = 0f;
 
-            // 以逻辑单位改变（你可以改为其他策略，例如随机）
-            _xh_logicalL += _xh_dir;
-            _xh_logicalR += _xh_dir;
+        //    // 以逻辑单位改变（你可以改为其他策略，例如随机）
+        //    _xh_logicalL += _xh_dir;
+        //    _xh_logicalR += _xh_dir;
 
-            // 碰到边界则反向
-            if (_xh_logicalL >= _xh_maxLogical || _xh_logicalL <= _xh_minLogical)
-            {
-                _xh_dir = -_xh_dir;
-            }
+        //    // 碰到边界则反向
+        //    if (_xh_logicalL >= _xh_maxLogical || _xh_logicalL <= _xh_minLogical)
+        //    {
+        //        _xh_dir = -_xh_dir;
+        //    }
 
-            _xh_logicalL = Mathf.Clamp(_xh_logicalL, _xh_minLogical, _xh_maxLogical);
-            _xh_logicalR = Mathf.Clamp(_xh_logicalR, _xh_minLogical, _xh_maxLogical);
+        //    _xh_logicalL = Mathf.Clamp(_xh_logicalL, _xh_minLogical, _xh_maxLogical);
+        //    _xh_logicalR = Mathf.Clamp(_xh_logicalR, _xh_minLogical, _xh_maxLogical);
 
-            // 发送到硬件（SetXeryon 方法会把逻辑值映射为物理值并写入硬件）
-            SetXeryonL(_xh_logicalL);
-            SetXeryonR(_xh_logicalR);
-        }
+        //    // 发送到硬件（SetXeryon 方法会把逻辑值映射为物理值并写入硬件）
+        //    SetXeryonL(_xh_logicalL);
+        //    SetXeryonR(_xh_logicalR);
+        //}
     }
 
     #endregion
