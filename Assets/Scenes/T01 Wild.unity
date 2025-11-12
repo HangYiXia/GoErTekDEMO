@@ -1126,7 +1126,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &663286100
 Transform:
   m_ObjectHideFlags: 0
@@ -4199,6 +4199,8 @@ MonoBehaviour:
   dofCamera: {fileID: 1031970169}
   useEyeTracking: 0
   eyeTrackingPosition: {x: 0, y: 0, z: 0}
+  xeryonManager: {fileID: 663286099}
+  xeryonScale: 10
   nearOffset: 1
   farOffset: 1
 --- !u!4 &2093453408

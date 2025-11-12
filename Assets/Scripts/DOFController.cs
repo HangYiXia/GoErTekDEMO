@@ -12,6 +12,12 @@ public class DOFController : MonoBehaviour
     // 等待EyeTracking bug修复
     public bool useEyeTracking = false;
     public Vector3 eyeTrackingPosition = Vector3.zero;
+    
+    // 调整焦距
+    public GameObject xeryonManager;
+    public int xeryonScale = 10;
+
+    private XeryonHardwareManager xeryonHardwareManager = null;
 
     // 调整这两个参数，让模糊与清晰边界合适
     public float nearOffset = 1.0f;
@@ -48,13 +54,34 @@ public class DOFController : MonoBehaviour
         {
             Debug.LogError("在指定的 Volume Profile 中没有找到 MyGaussianBlurSinglePass！请检查 Volume Profile 的设置。");
         }
-        
+
+        if (xeryonManager != null)
+        {
+            xeryonHardwareManager = xeryonManager.GetComponent<XeryonHardwareManager>();
+            if (xeryonHardwareManager != null)
+            {
+                Debug.Log("Get xeryonHardwareManager Successfully");
+            }
+        }
+        else
+        {
+            Debug.LogError("xeryonManager is null");
+        }
     }
 
     void Update()
     {
         focusPosition = useEyeTracking ? eyeTrackingPosition : focusGameObject.GetComponent<Transform>().position;
         float depth = CalcDepthFromDOFCamera(dofCamera, focusPosition);
+        if (xeryonHardwareManager != null)
+        {
+            xeryonHardwareManager.SetXeryonL(Mathf.CeilToInt(depth * xeryonScale));
+            xeryonHardwareManager.SetXeryonR(Mathf.CeilToInt(depth * xeryonScale));
+        }
+        else
+        {
+            Debug.LogError("xeryonHardwareManager is null");
+        }
         Debug.Log("focus game object's depth = " + depth);
 
         myGaussianBlur.nearBlurEnd.value = depth - nearOffset;
