@@ -94,9 +94,6 @@ public class ETCalibrationManager : MonoBehaviour
             // 显示目标
             if (calibrationTarget != null)
             {
-                // (注意: 您可能需要一个辅助函数将3D世界坐标转换为屏幕坐标
-                //  来放置UI元素，但如果 'calibrationTarget' 是一个3D对象，
-                //  直接设置其世界坐标即可)
                 calibrationTarget.transform.position = point;
                 calibrationTarget.SetActive(true);
             }
