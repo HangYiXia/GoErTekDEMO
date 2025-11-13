@@ -125,7 +125,7 @@ public class XeryonHardwareManager : MonoBehaviour
     {
         if (curVariFocal == 0)
         {
-            curXeryonL = -6000 + value * 20; // 映射到物理微米值
+            curXeryonL = -6000 + value * 20;
             await Task.Run(() => { XC_ISetDPOS(ctrlPtrL, curXeryonL); });
         }
     }
@@ -139,7 +139,7 @@ public class XeryonHardwareManager : MonoBehaviour
     {
         if (curVariFocal == 0)
         {
-            curXeryonR = -6000 + value * 20; // 映射到物理微米值
+            curXeryonR = -6000 + value * 20;
             await Task.Run(() => { XC_ISetDPOS(ctrlPtrR, curXeryonR); });
         }
     }
