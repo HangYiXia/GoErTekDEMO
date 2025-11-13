@@ -91,7 +91,7 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         float2 uv = input.texcoord;
 
         float sigma = max(_Radius * 0.25, 0.5);
-        int halfWidth = min((int)(sigma * 3.0), 3);   // 7×7 上限
+        int halfWidth = min((int)(sigma * 3.0), 10);   // 7×7 上限
         float3 blurColor = 0.0;
         float sum = 0.0;
 
