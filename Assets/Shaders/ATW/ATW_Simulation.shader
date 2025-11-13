@@ -1,10 +1,10 @@
 // A simple shader to simulate the reprojection effect of ATW.
 // This shader is intended for use with a Custom Post Process in Unity's HDRP.
-Shader "Hidden/ATW_Simulation"
+Shader "Hidden/Shader/ATW_Simulation"
 {
     Properties
     {
-        _MainTex ("Main Texture", 2D) = "white" {}
+        _MainTex ("Main Texture", 2DArray) = "white" {}
     }
 
     SubShader
@@ -28,12 +28,14 @@ Shader "Hidden/ATW_Simulation"
             struct Attributes
             {
                 uint vertexID : SV_VertexID;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
 
             TEXTURE2D_X(_MainTex);

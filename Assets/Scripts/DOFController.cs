@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -12,7 +13,7 @@ public class DOFController : MonoBehaviour
     // 等待EyeTracking bug修复
     public bool useEyeTracking = false;
     public Vector3 eyeTrackingPosition = Vector3.zero;
-    
+
     // 调整焦距
     public GameObject xeryonManager;
     public int xeryonScale = 10;
@@ -22,10 +23,15 @@ public class DOFController : MonoBehaviour
     // 调整这两个参数，让模糊与清晰边界合适
     public float nearOffset = 1.0f;
     public float farOffset = 1.0f;
-    
+
     private MyGaussianBlurSinglePass myGaussianBlur; // 缓存自定义效果的引用
     private Vector3 focusPosition;
-    
+
+    // 在你的类顶部添加这个变量
+    private float xeryonTimer = 0.0f;
+    public float xeryonInterval = 1.0f; // 方便以后修改间隔
+
+    private bool ok = false;
     void Start()
     {
         // 检查是否在 Inspector 中指定了 Volume
@@ -67,22 +73,49 @@ public class DOFController : MonoBehaviour
         {
             Debug.LogError("xeryonManager is null");
         }
+
+        ok = false;
     }
 
-    void Update()
+    public void IsOkToSetXeryon()
     {
-        focusPosition = useEyeTracking ? eyeTrackingPosition : focusGameObject.GetComponent<Transform>().position;
-        float depth = CalcDepthFromDOFCamera(dofCamera, focusPosition);
+        ok = true;
+    }
+
+    void SetXeryon(int value)
+    {
+        Debug.Log("SetXeryon is called");
+        if(!ok)return;
+        return;
         if (xeryonHardwareManager != null)
         {
-            //xeryonHardwareManager.SetXeryonL(Mathf.CeilToInt(depth * xeryonScale));
-            //xeryonHardwareManager.SetXeryonR(Mathf.CeilToInt(depth * xeryonScale));
+            xeryonHardwareManager.SetXeryonL(value);
+            xeryonHardwareManager.SetXeryonR(value);
         }
         else
         {
             Debug.LogError("xeryonHardwareManager is null");
         }
+    }
+    void Update()
+    {
+        focusPosition = useEyeTracking ? eyeTrackingPosition : focusGameObject.GetComponent<Transform>().position;
+        float depth = CalcDepthFromDOFCamera(dofCamera, focusPosition);
         Debug.Log("focus game object's depth = " + depth);
+
+        // --- 2. 使用计时器控制 SetXeryon ---
+        xeryonTimer += Time.deltaTime; // 累加每帧的时间
+
+        if (xeryonTimer >= xeryonInterval)
+        {
+            // 时间间隔（1秒）已到，执行函数
+            SetXeryon(Mathf.CeilToInt(depth * xeryonScale));
+
+            // 重置计时器
+            // 使用减法而不是 xeryonTimer = 0.0f;
+            // 这样可以防止"漂移"，确保长期来看平均每1.0秒执行一次
+            xeryonTimer -= xeryonInterval;
+        }
 
         myGaussianBlur.nearBlurEnd.value = depth - nearOffset;
         myGaussianBlur.nearBlurStart.value = myGaussianBlur.nearBlurEnd.value - 1.2f;
@@ -114,4 +147,5 @@ public class DOFController : MonoBehaviour
 
         return depth;
     }
+
 }

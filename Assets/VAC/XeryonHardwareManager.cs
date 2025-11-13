@@ -46,8 +46,10 @@ public class XeryonHardwareManager : MonoBehaviour
             XC_IStart(ctrlPtrR);
         });
 
-        SetXeryonL(0);
-        SetXeryonR(0);
+
+        //SetXeryonL(0);
+        //SetXeryonR(0);
+        GameObject.Find("DOFController").GetComponent<DOFController>().IsOkToSetXeryon();
     }
 
     async void OnDestroy()
