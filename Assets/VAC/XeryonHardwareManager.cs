@@ -132,7 +132,7 @@ public class XeryonHardwareManager : MonoBehaviour
         if (curVariFocal == 0)
         {
             curXeryonR = -6000 + value * 20;
-            await Task.Run(() => { XC_ISetDPOS(ctrlPtrR, curXeryonR); });
+            await Task.Run(() => { XC_ISetDPOS(ctrlPtrR, -curXeryonR); });
         }
     }
 

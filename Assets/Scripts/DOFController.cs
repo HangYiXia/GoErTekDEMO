@@ -82,11 +82,16 @@ public class DOFController : MonoBehaviour
         ok = true;
     }
 
+    private float LinearMap(float x, float minV, float maxV)
+    {
+        return (x - minV) / (maxV - minV) * 600;
+    }
+
     void SetXeryon(int value)
     {
         Debug.Log("SetXeryon is called");
         if(!ok)return;
-        return;
+        return; // de-comment it when crashing
         if (xeryonHardwareManager != null)
         {
             xeryonHardwareManager.SetXeryonL(value);
@@ -109,7 +114,7 @@ public class DOFController : MonoBehaviour
         if (xeryonTimer >= xeryonInterval)
         {
             // 时间间隔（1秒）已到，执行函数
-            SetXeryon(Mathf.CeilToInt(depth * xeryonScale));
+            SetXeryon(Mathf.Clamp(Mathf.CeilToInt(LinearMap(depth, 3.0f, 35.0f)), 0, 600));
 
             // 重置计时器
             // 使用减法而不是 xeryonTimer = 0.0f;
