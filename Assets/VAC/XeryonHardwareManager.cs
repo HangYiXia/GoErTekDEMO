@@ -23,8 +23,8 @@ public class XeryonHardwareManager : MonoBehaviour
 
     void Awake()
     {
-        LoadConfig(); // 1. 加载端口配置
-        LoadStateFromPrefs(); // 2. 加载上次保存的状态
+        LoadConfig();
+        LoadStateFromPrefs();
     }
 
     async void Start()
@@ -70,23 +70,14 @@ public class XeryonHardwareManager : MonoBehaviour
 
     // 自动每3秒改变一次逻辑位置并发送到硬件
     private float _xh_timer = 0f;
-    private bool _xh_initialized = false;
     private int _xh_logicalL = 0;
     private int _xh_logicalR = 0;
-    private int _xh_dir = 50; // 1 = 增加, -1 = 减少
+    private int _xh_dir = 50;
     private const int _xh_minLogical = 0;
-    private const int _xh_maxLogical = 600; // 对应物理范围 -6000 .. +6000 (step 20)
+    private const int _xh_maxLogical = 600;
 
     void Update()
     {
-        //// 延迟初始化：curXeryonL/R 在 Awake/LoadStateFromPrefs 中以物理值保存（um）
-        //if (!_xh_initialized)
-        //{
-        //    _xh_logicalL = Mathf.Clamp((curXeryonL + 6000) / 20, _xh_minLogical, _xh_maxLogical);
-        //    _xh_logicalR = Mathf.Clamp((curXeryonR + 6000) / 20, _xh_minLogical, _xh_maxLogical);
-        //    _xh_initialized = true;
-        //}
-
         //_xh_timer += Time.deltaTime;
         //if (_xh_timer >= 3f)
         //{
@@ -193,7 +184,6 @@ public class XeryonHardwareManager : MonoBehaviour
         PlayerPrefs.SetInt("curXeryonL", curXeryonL);
         PlayerPrefs.SetInt("curXeryonR", curXeryonR);
         PlayerPrefs.SetInt("curVariFocal", curVariFocal);
-        // 注意：原 SetSave 中的 curFoveated 已被移除
         Debug.Log("XeryonHardwareManager: Settings Saved.");
     }
 
@@ -203,7 +193,6 @@ public class XeryonHardwareManager : MonoBehaviour
         curXeryonL = PlayerPrefs.GetInt("curXeryonL");
         curXeryonR = PlayerPrefs.GetInt("curXeryonR");
         curVariFocal = PlayerPrefs.GetInt("curVariFocal");
-        // 注意：原 SetLoad 中的 curFoveated 已被移除
 
         Debug.Log("XeryonHardwareManager: Load setting "
             + " curXeryonL | " + curXeryonL

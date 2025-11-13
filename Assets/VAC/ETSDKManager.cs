@@ -1,15 +1,7 @@
 using UnityEngine;
-using UnityEngine.UI; // 1. 包含 UI 命名空间以使用 RawImage
-using System;
-using System.Runtime.InteropServices;
+using UnityEngine.UI;
+using System.Collections.Generic;
 
-/// <summary>
-/// (新) ETSDK 管理器 (已解耦)
-/// 职责：
-/// 1. 管理 ETSDK 图像的目标 RawImage 引用。
-/// 2. 在 Update() 中调用 ETSDK.ET_GetImages()。
-/// 3. 将获取到的 Texture2D 应用于 RawImage。
-/// </summary>
 public class ETSDKManager : MonoBehaviour
 {
     [Header("ETSDK Image Targets")]
@@ -29,14 +21,14 @@ public class ETSDKManager : MonoBehaviour
 
     void Update()
     {
-        Texture2D textureEt0, textureEt1;
-        if (!ETSDK.ET_GetImages(out textureEt0, out textureEt1))
+        List<Texture2D> textureEt;
+        if (!ETSDK.ET_GetImages(out textureEt))
         {
             Debug.Log("ET_GetImages() failed.");
             return;
         }
-        rawImageEt0.texture = textureEt0;
-        rawImageEt1.texture = textureEt1;
+        rawImageEt0.texture = textureEt[0];
+        rawImageEt1.texture = textureEt[1];
 
         timer += Time.deltaTime;
         if (timer >= 2.0f)
@@ -53,14 +45,10 @@ public class ETSDKManager : MonoBehaviour
 
     private void LogGazeData()
     {
-        if (ETSDK.ET_GetTrackResult(out ETSDK.EtResult3D result))
+        if (ETSDK.ET_GetTrackResult(out ETSDK.EtResult result))
         {
-            Debug.Log("gazeOrigin: " + result.gazeOrigin.x + ", " + result.gazeOrigin.y + ", " + result.gazeOrigin.z);
-            Debug.Log("gazeDirection: " + result.gazeDirection.x + ", " + result.gazeDirection.y + ", " + result.gazeDirection.z);
-            Debug.Log("gazeOriginL: " + result.gazeOriginL.x + ", " + result.gazeOriginL.y + ", " + result.gazeOriginL.z);
-            Debug.Log("gazeDirectionL: " + result.gazeDirectionL.x + ", " + result.gazeDirectionL.y + ", " + result.gazeDirectionL.z);
-            Debug.Log("gazeOriginR: " + result.gazeOriginR.x + ", " + result.gazeOriginR.y + ", " + result.gazeOriginR.z);
-            Debug.Log("gazeDirectionR: " + result.gazeDirectionR.x + ", " + result.gazeDirectionR.y + ", " + result.gazeDirectionR.z);
+            Debug.Log("gazeOrigin: " + result.origin.x + ", " + result.origin.y + ", " + result.origin.z);
+            Debug.Log("gazeDirection: " + result.direction.x + ", " + result.direction.y + ", " + result.direction.z);
         }
     }
 }
