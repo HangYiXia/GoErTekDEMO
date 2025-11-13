@@ -44,7 +44,7 @@
 }</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="E:\Unity\2022.3.62f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="E:\Unity\2022.3.62f2c1\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath E:\UnityProjects\GoErTekDEMO -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="E:\UnityProjects\GoErTekDEMO" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -55,7 +55,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Unit Tests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="E:\Unity\2022.3.62f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="E:\Unity\2022.3.62f2c1\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath E:\UnityProjects\GoErTekDEMO -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="E:\UnityProjects\GoErTekDEMO" />
       <option name="PASS_PARENT_ENVS" value="1" />
