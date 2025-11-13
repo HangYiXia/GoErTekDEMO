@@ -27,14 +27,19 @@ public class ETSDKManager : MonoBehaviour
             Debug.Log("ET_GetImages() failed.");
             return;
         }
+        if (!ETSDK.ET_GetTrackResult(out ETSDK.EtResult result))
+        {
+            Debug.Log("ET_GetTrackResult() failed.");
+            return;
+        }
         rawImageEt0.texture = textureEt[0];
         rawImageEt1.texture = textureEt[1];
 
         timer += Time.deltaTime;
-        if (timer >= 2.0f)
+        if (timer >= 0.2f)
         {
             timer = 0f;
-            LogGazeData();
+            LogGazeData(result);
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -43,12 +48,9 @@ public class ETSDKManager : MonoBehaviour
         }
     }
 
-    private void LogGazeData()
+    private void LogGazeData(ETSDK.EtResult result)
     {
-        if (ETSDK.ET_GetTrackResult(out ETSDK.EtResult result))
-        {
-            Debug.Log("gazeOrigin: " + result.origin.x + ", " + result.origin.y + ", " + result.origin.z);
-            Debug.Log("gazeDirection: " + result.direction.x + ", " + result.direction.y + ", " + result.direction.z);
-        }
+        Debug.Log("gazeOrigin: " + result.origin.x + ", " + result.origin.y + ", " + result.origin.z);
+        Debug.Log("gazeDirection: " + result.direction.x + ", " + result.direction.y + ", " + result.direction.z);
     }
 }

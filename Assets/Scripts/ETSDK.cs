@@ -71,6 +71,8 @@ public class ETSDK : MonoBehaviour
     [DllImport(DllName)]
     private static extern bool ETPlugin_ETSDKExitAndRelease();
 
+    //false : 不做坐标系转换; true : 读extern.json
+    // 在ETPlugin_StartStreaming之前调用
     [DllImport(DllName)]
     private static extern bool ETPlugin_GetExternalMatrixByETCamera(bool isNecessary);
 
@@ -81,10 +83,10 @@ public class ETSDK : MonoBehaviour
     private static extern float ETPlugin_GetCamExposure(int eye);
 
     [DllImport(DllName)]
-    private static extern void ETPlugin_SetCamExposure(int eye, float exposure);
+    private static extern void ETPlugin_SetCamExposure(int eye, float exposure);//0~32
 
     [DllImport(DllName)]
-    private static extern void ETPlugin_ChangeCamExposure(int eye, int flag);
+    private static extern void ETPlugin_ChangeCamExposure(int eye, int flag);// > 1 增大1 ；<1 减小1
 
     [DllImport(DllName)]
     private static extern bool ETPlugin_GetAutoAdjustCamExposureState();

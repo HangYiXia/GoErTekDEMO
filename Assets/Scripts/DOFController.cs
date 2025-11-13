@@ -75,8 +75,8 @@ public class DOFController : MonoBehaviour
         float depth = CalcDepthFromDOFCamera(dofCamera, focusPosition);
         if (xeryonHardwareManager != null)
         {
-            xeryonHardwareManager.SetXeryonL(Mathf.CeilToInt(depth * xeryonScale));
-            xeryonHardwareManager.SetXeryonR(Mathf.CeilToInt(depth * xeryonScale));
+            //xeryonHardwareManager.SetXeryonL(Mathf.CeilToInt(depth * xeryonScale));
+            //xeryonHardwareManager.SetXeryonR(Mathf.CeilToInt(depth * xeryonScale));
         }
         else
         {
