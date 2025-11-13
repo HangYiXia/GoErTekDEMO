@@ -23,7 +23,6 @@ public class XeryonHardwareManager : MonoBehaviour
 
     void Awake()
     {
-        path = Application.streamingAssetsPath + "/";
         LoadConfig(); // 1. 加载端口配置
         LoadStateFromPrefs(); // 2. 加载上次保存的状态
     }
@@ -162,6 +161,7 @@ public class XeryonHardwareManager : MonoBehaviour
     private void LoadConfig()
     {
         Debug.Log("XeryonHardwareManager: LoadConfig START");
+        path = Application.streamingAssetsPath + "/";
         try
         {
             string configFilePath = Path.Combine(path, configTxt);
