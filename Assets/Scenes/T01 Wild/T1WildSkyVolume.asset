@@ -498,7 +498,7 @@ MonoBehaviour:
   active: 1
   radius:
     m_OverrideState: 1
-    m_Value: 60
+    m_Value: 0
   nearBlurStart:
     m_OverrideState: 1
     m_Value: 0.1

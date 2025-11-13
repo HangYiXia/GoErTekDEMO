@@ -54,13 +54,25 @@ public sealed class MyGaussianBlurSinglePass : CustomPostProcessVolumeComponent,
         m_Material.SetFloat("_NearEnd", nearBlurEnd.value);
         m_Material.SetFloat("_FarStart", farBlurStart.value);
         m_Material.SetFloat("_FarEnd", farBlurEnd.value);
-        m_Material.SetTexture("_MainTex", src);
+        m_Material.SetVector("_MainTex_TexelSize", new Vector4(1.0f / src.rt.width, 1.0f / src.rt.height, src.rt.width, src.rt.height));
 
-        // 单 Pass → 一次 Blit 即可
-        //cmd.Blit(src, dest, m_Material, 0);
-        //Blitter.BlitCameraTexture(cmd, src, dest, m_Material, 0);
-        //HDUtils.BlitCameraTexture(cmd, src, dest, m_Material, 0);
-        HDUtils.DrawFullScreen(cmd, m_Material, dest);
+
+        var desc = src.rt.descriptor;
+        desc.depthBufferBits = 0;
+        RTHandle tempRT = RTHandles.Alloc(desc, filterMode: FilterMode.Bilinear, name: "GaussianBlurTempRT");
+        
+        m_Material.SetTexture("_MainTex", src);
+        m_Material.SetVector("_Direction", new Vector4(1.0f, 0.0f, 0.0f, 0.0f));
+        HDUtils.DrawFullScreen(cmd, m_Material, tempRT, null, 1);
+        
+        
+        
+        m_Material.SetTexture("_MainTex", tempRT);
+        m_Material.SetVector("_Direction", new Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+        //m_Material.SetTexture("_OriTex", src);
+        HDUtils.DrawFullScreen(cmd, m_Material, dest, null, 1);
+        
+        RTHandles.Release(tempRT);
     }
 
     public override void Cleanup()
