@@ -86,7 +86,7 @@ public class DOFController : MonoBehaviour
     {
         Debug.Log("SetXeryon is called");
         if(!ok)return;
-        //return;
+        return;
         if (xeryonHardwareManager != null)
         {
             xeryonHardwareManager.SetXeryonL(value);
