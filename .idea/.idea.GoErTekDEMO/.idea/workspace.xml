@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="c2e99a5c-4b05-4c71-9b63-fb5a321e62af" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/T01 Wild/T1WildSkyVolume.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/T01 Wild/T1WildSkyVolume.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/MyDoF3/MyGasussianBlurSinglePass.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MyDoF3/MyGasussianBlurSinglePass.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Shaders/MyDoF3/GaussianBlurSinglePass.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shaders/MyDoF3/GaussianBlurSinglePass.shader" afterDir="false" />
     </list>
@@ -19,6 +18,11 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b0b044832c86429e90c306261f4bbd83177a00/00/1437c7a7/RenderTexture.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b0b044832c86429e90c306261f4bbd83177a00/5f/b58b1e7d/RenderTextureDescriptor.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.render-pipelines.core@14.0.12/Runtime/Textures/RTHandle.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.render-pipelines.core@14.0.12/Runtime/Textures/RTHandleSystem.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.render-pipelines.core@14.0.12/Runtime/Textures/RTHandles.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.render-pipelines.high-definition@14.0.12/Runtime/RenderPipeline/Utility/HDUtils.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.valvesoftware.unity.openvr@970ac47786c4/Runtime/OpenVRLoader.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
@@ -31,20 +35,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "dqt__blur",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="E:\Unity\2022.3.62f2c1\Editor\Unity.exe" />
@@ -109,7 +113,7 @@
       <workItem from="1762938273598" duration="12000" />
       <workItem from="1762938327765" duration="3000" />
       <workItem from="1763006943983" duration="4369000" />
-      <workItem from="1763015729284" duration="970000" />
+      <workItem from="1763015729284" duration="3988000" />
     </task>
     <servers />
   </component>

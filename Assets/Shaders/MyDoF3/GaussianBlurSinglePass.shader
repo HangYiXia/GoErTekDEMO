@@ -4,7 +4,6 @@ Shader "Hidden/Shader/GaussianBlurSinglePass" // 重命名
     {
         _MainTex ("Main Texture", 2DArray) = "white" {}
         _Radius ("Blur Radius", Range(0, 60)) = 3
-        _OriTex ("Original Texture", 2DArray) = "white" {}
     }
 
     HLSLINCLUDE
@@ -14,10 +13,8 @@ Shader "Hidden/Shader/GaussianBlurSinglePass" // 重命名
     #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
 
     TEXTURE2D_X(_MainTex);
-    TEXTURE2D_X(_OriTex);
     float4 _MainTex_TexelSize;
     float _Radius;
-    float2 _Direction; // 新增：模糊方向 (e.g., (1, 0) or (0, 1))
     
     float _NearStart;
     float _NearEnd;
@@ -57,7 +54,7 @@ Shader "Hidden/Shader/GaussianBlurSinglePass" // 重命名
     // ...
 
 
-    float4 GaussianBlurSeparate(Varyings input) : SV_Target
+    float4 GaussianBlurH(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
         float2 uv = input.texcoord;
@@ -76,8 +73,37 @@ Shader "Hidden/Shader/GaussianBlurSinglePass" // 重命名
         // 只在一个方向上循环
         for (int i = -halfWidth; i <= halfWidth; ++i)
         {
-            // _Direction 在 C# 中设置为 (1, 0) 或 (0, 1)
-            float2 offset = _Direction * i * _MainTex_TexelSize.xy;
+            float2 offset = float2(1, 0) * i * _MainTex_TexelSize.xy;
+            float w = exp(-(i*i) / (2.0 * sigma * sigma));
+            
+            blurColor += LOAD_TEXTURE2D_X(_MainTex, uint2((uv + offset) * mainTexSize)).rgb * w;
+            sum += w;
+        }
+        blurColor /= sum;
+        
+        return float4(blurColor, 1.0);
+    }
+
+     float4 GaussianBlurV(Varyings input) : SV_Target
+    {
+        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+        float2 uv = input.texcoord;
+
+ 
+        // 1. Sigma 现在直接受 Radius 影响，我们去掉了 min(..., 3) 的限制
+        float sigma = max(_Radius * 0.25, 0.5);
+        // 2. 半径可以设置得更大，比如 15 (总宽度 31)
+        int halfWidth = min((int)(sigma * 3.0), 15); // 允许更大的核
+        
+        float3 blurColor = 0.0;
+        float sum = 0.0;
+        
+        // 获取 _MainTex (src 或 tempRT) 的正确尺寸
+        float2 mainTexSize = _MainTex_TexelSize.zw;
+        // 只在一个方向上循环
+        for (int i = -halfWidth; i <= halfWidth; ++i)
+        {
+            float2 offset = float2(0, 1) * i * _MainTex_TexelSize.xy;
             float w = exp(-(i*i) / (2.0 * sigma * sigma));
             
             blurColor += LOAD_TEXTURE2D_X(_MainTex, uint2((uv + offset) * mainTexSize)).rgb * w;
@@ -100,7 +126,7 @@ Shader "Hidden/Shader/GaussianBlurSinglePass" // 重命名
             ZWrite Off ZTest Always Blend Off Cull Off
             HLSLPROGRAM
             #pragma vertex Vert
-            #pragma fragment GaussianBlurSeparate
+            #pragma fragment GaussianBlurH
             ENDHLSL
         }
         
@@ -111,7 +137,7 @@ Shader "Hidden/Shader/GaussianBlurSinglePass" // 重命名
             ZWrite Off ZTest Always Blend Off Cull Off
             HLSLPROGRAM
             #pragma vertex Vert
-            #pragma fragment GaussianBlurSeparate
+            #pragma fragment GaussianBlurV
             ENDHLSL
         }
     }

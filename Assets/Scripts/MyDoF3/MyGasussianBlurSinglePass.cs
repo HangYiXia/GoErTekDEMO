@@ -40,40 +40,54 @@ public sealed class MyGaussianBlurSinglePass : CustomPostProcessVolumeComponent,
         m_Material = CoreUtils.CreateEngineMaterial("Hidden/Shader/GaussianBlurSinglePass");
     }
 
-    public override void Render(CommandBuffer cmd, HDCamera camera, RTHandle src, RTHandle dest)
+public override void Render(CommandBuffer cmd, HDCamera camera, RTHandle src, RTHandle dest)
+{
+    // 确保 using 语句后有 {
+    using (new ProfilingScope(cmd, new ProfilingSampler("My Gaussian Blur (Two Pass)")))
     {
-        using (new ProfilingScope(cmd, new ProfilingSampler("My Gaussian Blur (Single Pass)"))) ;
         if (m_Material == null)
         {
             HDUtils.BlitCameraTexture(cmd, src, dest);
             return;
         }
 
+        // --- 1. 设置通用参数 ---
         m_Material.SetFloat("_Radius", radius.value);
         m_Material.SetFloat("_NearStart", nearBlurStart.value);
         m_Material.SetFloat("_NearEnd", nearBlurEnd.value);
         m_Material.SetFloat("_FarStart", farBlurStart.value);
         m_Material.SetFloat("_FarEnd", farBlurEnd.value);
-        m_Material.SetVector("_MainTex_TexelSize", new Vector4(1.0f / src.rt.width, 1.0f / src.rt.height, src.rt.width, src.rt.height));
 
-
+        // --- 2. 分配临时 RT ---
+        // 【关键修正】: 必须使用 src.descriptor, 不能用 src.rt.descriptor
         var desc = src.rt.descriptor;
         desc.depthBufferBits = 0;
         RTHandle tempRT = RTHandles.Alloc(desc, filterMode: FilterMode.Bilinear, name: "GaussianBlurTempRT");
-        
+
+        // --- 3. Pass 0 (Horizontal) [src -> tempRT] ---
+        // 【关键修正】: 必须使用 src.referenceSize, 不能用 src.rt.width
+        var srcSize = src.referenceSize;
+        m_Material.SetVector("_MainTex_TexelSize", new Vector4(1.0f / srcSize.x, 1.0f / srcSize.y, srcSize.x, srcSize.y));
         m_Material.SetTexture("_MainTex", src);
-        m_Material.SetVector("_Direction", new Vector4(1.0f, 0.0f, 0.0f, 0.0f));
-        HDUtils.DrawFullScreen(cmd, m_Material, tempRT, null, 1);
         
+        // (已移除 _Direction 设置，因为 Shader Pass 0 (GaussianBlurH) 已硬编码方向)
+        HDUtils.DrawFullScreen(cmd, m_Material, tempRT, null, 0); // Pass 0 -> tempRT
+
+        // --- 4. Pass 1 (Vertical) [tempRT -> dest] ---
+        // 【关键修正】: 必须更新 _MainTex_TexelSize 以匹配新的输入 (tempRT)
+        var tempSize = tempRT.referenceSize;
+        m_Material.SetVector("_MainTex_TexelSize", new Vector4(1.0f / tempSize.x, 1.0f / tempSize.y, tempSize.x, tempSize.y));
         
+        // 【关键修正】: Pass 1 的输入必须是 tempRT
+        m_Material.SetTexture("_MainTex", src); 
         
-        m_Material.SetTexture("_MainTex", tempRT);
-        m_Material.SetVector("_Direction", new Vector4(0.0f, 1.0f, 0.0f, 0.0f));
-        //m_Material.SetTexture("_OriTex", src);
-        HDUtils.DrawFullScreen(cmd, m_Material, dest, null, 1);
-        
+        // (已移除 _Direction 设置，因为 Shader Pass 1 (GaussianBlurV) 已硬编码方向)
+        HDUtils.DrawFullScreen(cmd, m_Material, dest, null, 1); // Pass 1 -> dest
+
+        // --- 5. 清理 ---
         RTHandles.Release(tempRT);
-    }
+    } 
+}
 
     public override void Cleanup()
     {
