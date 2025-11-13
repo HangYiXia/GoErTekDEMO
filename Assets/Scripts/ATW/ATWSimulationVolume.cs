@@ -92,8 +92,9 @@ public sealed class ATWSimulationVolume : CustomPostProcessVolumeComponent, IPos
         m_Material.SetMatrix(k_NonJitteredInverseProjMatrixID, invProjMatrix);
         
         // Execute the shader pass to render the effect
-        cmd.Blit(source, destination, m_Material);
-        //HDUtils.DrawFullScreen(cmd, m_Material, destination, null, 0);
+       //md.Blit(source, destination, m_Material);
+        m_Material.SetTexture("_MainTex", source);
+        HDUtils.DrawFullScreen(cmd, m_Material, destination, null, 0);
     }
 
     public override void Cleanup()

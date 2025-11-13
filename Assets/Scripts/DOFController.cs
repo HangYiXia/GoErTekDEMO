@@ -31,6 +31,7 @@ public class DOFController : MonoBehaviour
     private float xeryonTimer = 0.0f;
     public float xeryonInterval = 1.0f; // 方便以后修改间隔
 
+    public bool ok = false;
     void Start()
     {
         // 检查是否在 Inspector 中指定了 Volume
@@ -72,11 +73,14 @@ public class DOFController : MonoBehaviour
         {
             Debug.LogError("xeryonManager is null");
         }
+
+        ok = false;
     }
 
     void SetXeryon(int value)
     {
         Debug.Log("SetXeryon is called");
+        if(!ok)return;
         //return;
         if (xeryonHardwareManager != null)
         {

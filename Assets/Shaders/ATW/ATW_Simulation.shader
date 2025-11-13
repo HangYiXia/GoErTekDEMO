@@ -4,7 +4,7 @@ Shader "Hidden/ATW_Simulation"
 {
     Properties
     {
-        _MainTex ("Main Texture", 2D) = "white" {}
+        _MainTex ("Main Texture", 2DArray)=white{}
     }
 
     SubShader
