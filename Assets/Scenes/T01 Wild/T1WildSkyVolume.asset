@@ -330,6 +330,7 @@ MonoBehaviour:
   - {fileID: 8468756425897094408}
   - {fileID: -7194291193526483275}
   - {fileID: 8362991864228361993}
+  - {fileID: 3278877070256538413}
 --- !u!114 &11590101117236096
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -482,6 +483,48 @@ MonoBehaviour:
   m_ObsoleteScrollSpeed:
     m_OverrideState: 0
     m_Value: 1
+--- !u!114 &3278877070256538413
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3719f7bf137ea944b10da967624f8b9, type: 3}
+  m_Name: ATWSimulationVolume
+  m_EditorClassIdentifier: 
+  active: 1
+  atwInverseMatrix:
+    e00: 1
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 1
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 1
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 1
+  yaw:
+    m_OverrideState: 1
+    m_Value: 0
+  pitch:
+    m_OverrideState: 1
+    m_Value: 0
+  roll:
+    m_OverrideState: 1
+    m_Value: 0
+  enabled:
+    m_OverrideState: 1
+    m_Value: 0
 --- !u!114 &8362991864228361993
 MonoBehaviour:
   m_ObjectHideFlags: 3

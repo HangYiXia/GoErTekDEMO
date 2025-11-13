@@ -1,10 +1,10 @@
 // A simple shader to simulate the reprojection effect of ATW.
 // This shader is intended for use with a Custom Post Process in Unity's HDRP.
-Shader "Hidden/ATW_Simulation"
+Shader "Hidden/Shader/ATW_Simulation"
 {
     Properties
     {
-        _MainTex ("Main Texture", 2DArray)=white{}
+        _MainTex ("Main Texture", 2DArray) = "white" {}
     }
 
     SubShader

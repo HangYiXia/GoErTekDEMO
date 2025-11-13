@@ -47,7 +47,7 @@ public sealed class ATWSimulationVolume : CustomPostProcessVolumeComponent, IPos
     public override void Setup()
     {
         // The shader path must match the "Hidden/..." name in the shader file
-        m_Material = CoreUtils.CreateEngineMaterial("Hidden/ATW_Simulation");
+        m_Material = CoreUtils.CreateEngineMaterial("Hidden/Shader/ATW_Simulation");
         /*
         m_frameRateLimiter = GameObject.Find("FrameLimiter").GetComponent<FrameRateLimiter>();
         if (m_frameRateLimiter == null)
