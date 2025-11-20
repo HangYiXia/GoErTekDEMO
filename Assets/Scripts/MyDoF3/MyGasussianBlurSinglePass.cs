@@ -21,14 +21,10 @@ public sealed class MyGaussianBlurSinglePass : CustomPostProcessVolumeComponent,
     public MinFloatParameter farBlurEnd = new MinFloatParameter(50f, 0f);
     
     public BoolParameter enabled = new BoolParameter(true);
-    
 
-    public bool IsActive() => m_Material != null && 
-                              radius.value > 0 && 
-                              nearBlurEnd.value > nearBlurStart.value && 
-                              farBlurStart.value < farBlurEnd.value && 
-                              nearBlurEnd.value < farBlurStart.value &&
-                              enabled.value;
+
+    public bool IsActive() => m_Material != null &&
+                              radius.value > 0;
 
     public override CustomPostProcessInjectionPoint injectionPoint =>
         CustomPostProcessInjectionPoint.AfterPostProcess;
@@ -56,6 +52,7 @@ public sealed class MyGaussianBlurSinglePass : CustomPostProcessVolumeComponent,
         m_Material.SetFloat("_FarEnd", farBlurEnd.value);
         m_Material.SetTexture("_MainTex", src);
 
+        Debug.Log("Is Active");
         // 单 Pass → 一次 Blit 即可
         //cmd.Blit(src, dest, m_Material, 0);
         //Blitter.BlitCameraTexture(cmd, src, dest, m_Material, 0);

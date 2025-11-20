@@ -24,6 +24,9 @@ public class DOFController : MonoBehaviour
     public float nearOffset = 1.0f;
     public float farOffset = 1.0f;
 
+    public float halfDiopter = 0.05f;
+    
+
     private MyGaussianBlurSinglePass myGaussianBlur; // 缓存自定义效果的引用
     private Vector3 focusPosition;
 
@@ -87,6 +90,49 @@ public class DOFController : MonoBehaviour
         return (x - minV) / (maxV - minV) * 600;
     }
 
+    private float GetNearEnd(float curDepth)
+    {
+        float curDiopter = 1.0f / curDepth;
+        if (curDiopter > 0.17f)
+        {
+            float nearStartDiopter = curDiopter + 0.02f;
+            return 1.0f / nearStartDiopter;
+        }
+        else
+        {
+            float nearStartDiopter = curDiopter + 0.02f;
+            return 1.0f / nearStartDiopter;
+        }
+    }
+
+    private float GetNearStart(float curDepth)
+    {
+        float curDiopter = 1.0f / curDepth;
+        if(curDiopter > 0.17f)
+        {
+            float nearStartDiopter = curDiopter + 0.02f + 0.001f;
+            return 1.0f / nearStartDiopter;
+        }
+        else
+        {
+            float nearStartDiopter = curDiopter + 0.02f + 0.001f;
+            return 1.0f / nearStartDiopter;
+        }
+    }
+
+    private float GetFarStart(float curDepth)
+    {
+        float farStartDiopter = Mathf.Max(1.0f / curDepth - 0.05f, 0.0001f);
+        return 1.0f / farStartDiopter;
+    }
+
+    private float GetFarEnd(float curDepth)
+    {
+        float farStartDiopter = Mathf.Max(1.0f / curDepth - 0.05f - 0.001f, 0.0001f);
+        return 1.0f / farStartDiopter;
+    }
+
+
     void SetXeryon(int value)
     {
         Debug.Log("SetXeryon is called");
@@ -122,11 +168,29 @@ public class DOFController : MonoBehaviour
             xeryonTimer -= xeryonInterval;
         }
 
+        /*
         myGaussianBlur.nearBlurEnd.value = depth - nearOffset;
         myGaussianBlur.nearBlurStart.value = myGaussianBlur.nearBlurEnd.value - 1.2f;
 
         myGaussianBlur.farBlurStart.value = depth + farOffset;
         myGaussianBlur.farBlurEnd.value = myGaussianBlur.farBlurStart.value + 1.2f;
+        */
+
+        myGaussianBlur.nearBlurEnd.value = GetNearEnd(depth);
+        //myGaussianBlur.nearBlurStart.value = GetNearStart(depth);
+        myGaussianBlur.nearBlurStart.value = myGaussianBlur.nearBlurEnd.value - 8.0f;
+        if (depth < 6.0f)
+        {
+            //myGaussianBlur.nearBlurStart.value = GetNearStart(depth) - 2.0f;
+        }
+        Debug.Log("myGaussianBlur.nearBlurEnd.value = " + myGaussianBlur.nearBlurEnd.value);
+        Debug.Log("myGaussianBlur.nearBlurStart.value = " + myGaussianBlur.nearBlurStart.value);
+
+        myGaussianBlur.farBlurStart.value = GetFarStart(depth);
+        //myGaussianBlur.farBlurEnd.value = GetFarEnd(depth);
+        myGaussianBlur.farBlurEnd.value = myGaussianBlur.farBlurStart.value + 8.0f;
+        Debug.Log("myGaussianBlur.farBlurStart.value = " + myGaussianBlur.farBlurStart.value);
+        Debug.Log("myGaussianBlur.farBlurEnd.value = " + myGaussianBlur.farBlurEnd.value);
     }
 
     float CalcDepthFromDOFCamera(Camera dofCamera, Vector3 worldPosition)
