@@ -6,13 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c2e99a5c-4b05-4c71-9b63-fb5a321e62af" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/T01 Wild/T1WildSkyVolume.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/T01 Wild/T1WildSkyVolume.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/DOFController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/DOFController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MyDoF3/MyGasussianBlurSinglePass.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MyDoF3/MyGasussianBlurSinglePass.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MyGaussianBlur.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MyGaussianBlur/GaussianBlur.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MyGaussianBlur/GaussianBlur.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shaders/MyDoF3/GaussianBlurSinglePass.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shaders/MyDoF3/GaussianBlurSinglePass.shader" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,7 +106,7 @@
       <workItem from="1762938017112" duration="9000" />
       <workItem from="1762938273598" duration="12000" />
       <workItem from="1762938327765" duration="3000" />
-      <workItem from="1764131011791" duration="5358000" />
+      <workItem from="1764131011791" duration="6074000" />
     </task>
     <servers />
   </component>

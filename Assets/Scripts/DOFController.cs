@@ -151,8 +151,9 @@ public class DOFController : MonoBehaviour
         float blurRangePixel = 2 * kernelRadius;
         
         float maxCoCSize = blurRangePixel * pixelWorldSize * 0.00002f;
-
+        
         Debug.Log($"Max CoC Size = {maxCoCSize} meter");
+        maxCoCSize = 4e-5f;
         return maxCoCSize;
     }
 
