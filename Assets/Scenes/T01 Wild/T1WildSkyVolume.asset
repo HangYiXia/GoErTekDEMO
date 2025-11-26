@@ -347,18 +347,18 @@ MonoBehaviour:
   radius:
     m_OverrideState: 1
     m_Value: 10
-  nearBlurStart:
-    m_OverrideState: 1
-    m_Value: 0.1
-  nearBlurEnd:
-    m_OverrideState: 1
-    m_Value: 5
-  farBlurStart:
-    m_OverrideState: 1
-    m_Value: 20
-  farBlurEnd:
-    m_OverrideState: 1
-    m_Value: 50
+  focalLength:
+    m_OverrideState: 0
+    m_Value: 10
+  f:
+    m_OverrideState: 0
+    m_Value: 0.017
+  A:
+    m_OverrideState: 0
+    m_Value: 0.002
+  maxCoCsize:
+    m_OverrideState: 0
+    m_Value: 120
   enabled:
     m_OverrideState: 1
     m_Value: 0
@@ -541,18 +541,18 @@ MonoBehaviour:
   radius:
     m_OverrideState: 1
     m_Value: 60
-  nearBlurStart:
+  focalLength:
     m_OverrideState: 1
-    m_Value: 0.1
-  nearBlurEnd:
+    m_Value: 10
+  f:
     m_OverrideState: 1
-    m_Value: 5
-  farBlurStart:
+    m_Value: 0.017
+  A:
     m_OverrideState: 1
-    m_Value: 20
-  farBlurEnd:
+    m_Value: 0.002
+  maxCoCsize:
     m_OverrideState: 1
-    m_Value: 50
+    m_Value: 0.000024
   enabled:
     m_OverrideState: 1
     m_Value: 1

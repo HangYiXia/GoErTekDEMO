@@ -35,6 +35,7 @@ public class DOFController : MonoBehaviour
     public float xeryonInterval = 1.0f; // 方便以后修改间隔
 
     private bool ok = false;
+    
     void Start()
     {
         // 检查是否在 Inspector 中指定了 Volume
@@ -132,6 +133,29 @@ public class DOFController : MonoBehaviour
         return 1.0f / farStartDiopter;
     }
 
+    private float CacMaxCoCSize(float focalLength, float kernelRadius, ref Camera mainCamera)
+    {
+        if (focalLength <= 0 || kernelRadius < 0 || mainCamera == null)
+        {
+            Debug.LogError("Invalid parameters in CacMaxCoCSize");
+            return 1e-5f;
+        }
+        
+        int rtHeight = mainCamera.pixelHeight; // 渲染目标宽度（像素）
+        float fov = mainCamera.fieldOfView;  // 相机视场角（度，默认垂直视场角）
+        float focusDistance = focalLength;
+        
+        float halfFovRad = fov * Mathf.Deg2Rad / 2f; // 视场角的一半（弧度）
+        float focusPlaneHeight = 2 * focusDistance * Mathf.Tan(halfFovRad); // 对焦平面的屏幕总宽度（米）
+        float pixelWorldSize = focusPlaneHeight / rtHeight; // 像素世界尺寸（米/像素）
+        float blurRangePixel = 2 * kernelRadius;
+        
+        float maxCoCSize = blurRangePixel * pixelWorldSize * 0.00002f;
+
+        Debug.Log($"Max CoC Size = {maxCoCSize} meter");
+        return maxCoCSize;
+    }
+
 
     void SetXeryon(int value)
     {
@@ -152,7 +176,7 @@ public class DOFController : MonoBehaviour
     {
         focusPosition = useEyeTracking ? eyeTrackingPosition : focusGameObject.GetComponent<Transform>().position;
         float depth = CalcDepthFromDOFCamera(dofCamera, focusPosition);
-        Debug.Log("focus game object's depth = " + depth);
+        //Debug.Log("focus game object's depth = " + depth);
 
         // --- 2. 使用计时器控制 SetXeryon ---
         xeryonTimer += Time.deltaTime; // 累加每帧的时间
@@ -168,29 +192,21 @@ public class DOFController : MonoBehaviour
             xeryonTimer -= xeryonInterval;
         }
 
+
         /*
-        myGaussianBlur.nearBlurEnd.value = depth - nearOffset;
-        myGaussianBlur.nearBlurStart.value = myGaussianBlur.nearBlurEnd.value - 1.2f;
-
-        myGaussianBlur.farBlurStart.value = depth + farOffset;
-        myGaussianBlur.farBlurEnd.value = myGaussianBlur.farBlurStart.value + 1.2f;
-        */
-
         myGaussianBlur.nearBlurEnd.value = GetNearEnd(depth);
-        //myGaussianBlur.nearBlurStart.value = GetNearStart(depth);
         myGaussianBlur.nearBlurStart.value = myGaussianBlur.nearBlurEnd.value - 8.0f;
-        if (depth < 6.0f)
-        {
-            //myGaussianBlur.nearBlurStart.value = GetNearStart(depth) - 2.0f;
-        }
         Debug.Log("myGaussianBlur.nearBlurEnd.value = " + myGaussianBlur.nearBlurEnd.value);
         Debug.Log("myGaussianBlur.nearBlurStart.value = " + myGaussianBlur.nearBlurStart.value);
 
         myGaussianBlur.farBlurStart.value = GetFarStart(depth);
-        //myGaussianBlur.farBlurEnd.value = GetFarEnd(depth);
         myGaussianBlur.farBlurEnd.value = myGaussianBlur.farBlurStart.value + 8.0f;
         Debug.Log("myGaussianBlur.farBlurStart.value = " + myGaussianBlur.farBlurStart.value);
         Debug.Log("myGaussianBlur.farBlurEnd.value = " + myGaussianBlur.farBlurEnd.value);
+        */
+        
+        myGaussianBlur.focalLength.value = depth;
+        myGaussianBlur.maxCoCsize.value = CacMaxCoCSize(depth, myGaussianBlur.radius.value, ref dofCamera);
     }
 
     float CalcDepthFromDOFCamera(Camera dofCamera, Vector3 worldPosition)
