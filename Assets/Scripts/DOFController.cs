@@ -40,7 +40,7 @@ public class DOFController : MonoBehaviour
 
     private bool ok = false;
 
-    private string outputPath = "D:\\DALAB\\HengXiang\\GeEr\\xeryonTime.csv";
+    private string outputPath = "E:\\UnityProjects\\result\\xeryonTime.csv";
 
     struct Item
     {
@@ -247,7 +247,7 @@ public class DOFController : MonoBehaviour
         curItem.opTime = 0;
         
         itemList.Add(curItem);
-        //if(!ok)return;
+        if(!ok)return;
         //return; // de-comment it when crashing
         if (xeryonHardwareManager != null)
         {
