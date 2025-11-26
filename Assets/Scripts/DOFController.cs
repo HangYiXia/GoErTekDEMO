@@ -1,7 +1,10 @@
 using System.Collections;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
+using System.Text;
+using System.IO;
 using UnityEngine.Rendering.HighDefinition;
 
 public class DOFController : MonoBehaviour
@@ -33,9 +36,77 @@ public class DOFController : MonoBehaviour
     // 在你的类顶部添加这个变量
     private float xeryonTimer = 0.0f;
     public float xeryonInterval = 1.0f; // 方便以后修改间隔
+    private float lastStartTime = 0.0f;
 
     private bool ok = false;
-    
+
+    private string outputPath = "D:\\DALAB\\HengXiang\\GeEr\\xeryonTime.csv";
+
+    struct Item
+    {
+        public float curDepth;
+        public string state;
+        public string curTime;
+        public float opTime;
+
+        Item(float _curDepth, string _state, string _curTime, float _opTime)
+        {
+            curDepth = _curDepth;
+            state = _state;
+            curTime = _curTime;
+            opTime = _opTime;
+        }
+    }
+
+    private Item curItem;
+
+    private List<Item> itemList = new List<Item>();
+
+    void SaveToDisk(string path)
+    {
+        // 1. 安全检查：如果列表为空，可以选择不保存或保存空表头
+        if (itemList == null || itemList.Count == 0)
+        {
+            Debug.LogWarning("列表为空，没有数据被保存。");
+            return;
+        }
+
+        // 2. 使用 StringBuilder 拼接数据（性能优于字符串直接相加）
+        StringBuilder sb = new StringBuilder();
+
+        // 3. 写入表头（列名）
+        sb.AppendLine("depth,state,curTime,opTime");
+
+        // 4. 遍历列表写入数据
+        foreach (var item in itemList)
+        {
+            // 如果 state 或 curTime 中可能包含英文逗号，建议用双引号包裹：
+            // string line = $"{item.curDepth},\"{item.state}\",\"{item.curTime}\",{item.opTime}";
+        
+            string line = $"{item.curDepth},{item.state},{item.curTime},{item.opTime}";
+            sb.AppendLine(line);
+        }
+
+        try
+        {
+            // 5. 确保目录存在（可选，防止路径文件夹不存在报错）
+            string directory = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // 6. 写入文件
+            // new UTF8Encoding(true) 表示带BOM的UTF8，这对Excel正确识别中文至关重要
+            File.WriteAllText(path, sb.ToString(), new UTF8Encoding(true));
+        
+            Debug.Log($"保存成功: {path}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"保存失败: {e.Message}");
+        }
+    }
     void Start()
     {
         // 检查是否在 Inspector 中指定了 Volume
@@ -157,16 +228,31 @@ public class DOFController : MonoBehaviour
         return maxCoCSize;
     }
 
+    void OnCompeleteSetXeryon(float finishedTime)
+    {
+        curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        curItem.state = "end";
+        curItem.opTime = finishedTime - lastStartTime;
+        
+        lastStartTime = finishedTime;
+        itemList.Add(curItem);
+    }
 
     void SetXeryon(int value)
     {
         Debug.Log("SetXeryon is called");
-        if(!ok)return;
-        return; // de-comment it when crashing
+        lastStartTime = Time.realtimeSinceStartup * 1000.0f;
+        curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        curItem.state = "Start";
+        curItem.opTime = 0;
+        
+        itemList.Add(curItem);
+        //if(!ok)return;
+        //return; // de-comment it when crashing
         if (xeryonHardwareManager != null)
         {
             xeryonHardwareManager.SetXeryonL(value);
-            xeryonHardwareManager.SetXeryonR(value);
+            xeryonHardwareManager.SetXeryonR(value, OnCompeleteSetXeryon);
         }
         else
         {
@@ -177,6 +263,7 @@ public class DOFController : MonoBehaviour
     {
         focusPosition = useEyeTracking ? eyeTrackingPosition : focusGameObject.GetComponent<Transform>().position;
         float depth = CalcDepthFromDOFCamera(dofCamera, focusPosition);
+        curItem.curDepth = depth;
         //Debug.Log("focus game object's depth = " + depth);
 
         // --- 2. 使用计时器控制 SetXeryon ---
@@ -188,8 +275,6 @@ public class DOFController : MonoBehaviour
             SetXeryon(Mathf.Clamp(Mathf.CeilToInt(LinearMap(depth, 3.0f, 35.0f)), 0, 600));
 
             // 重置计时器
-            // 使用减法而不是 xeryonTimer = 0.0f;
-            // 这样可以防止"漂移"，确保长期来看平均每1.0秒执行一次
             xeryonTimer -= xeryonInterval;
         }
 
@@ -208,6 +293,11 @@ public class DOFController : MonoBehaviour
         
         myGaussianBlur.focalLength.value = depth;
         myGaussianBlur.maxCoCsize.value = CacMaxCoCSize(depth, myGaussianBlur.radius.value, ref dofCamera);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SaveToDisk(outputPath);
+        }
     }
 
     float CalcDepthFromDOFCamera(Camera dofCamera, Vector3 worldPosition)

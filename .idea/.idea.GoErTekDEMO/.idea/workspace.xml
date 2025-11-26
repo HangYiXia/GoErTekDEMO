@@ -7,6 +7,7 @@
     <list default="true" id="c2e99a5c-4b05-4c71-9b63-fb5a321e62af" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/DOFController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/DOFController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/VAC/XeryonHardwareManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/VAC/XeryonHardwareManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,6 +108,8 @@
       <workItem from="1762938273598" duration="12000" />
       <workItem from="1762938327765" duration="3000" />
       <workItem from="1764131011791" duration="6074000" />
+      <workItem from="1764138369523" duration="640000" />
+      <workItem from="1764140380427" duration="4986000" />
     </task>
     <servers />
   </component>
