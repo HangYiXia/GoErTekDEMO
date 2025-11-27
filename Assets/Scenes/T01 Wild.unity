@@ -12675,6 +12675,7 @@ GameObject:
   - component: {fileID: 1949182089}
   - component: {fileID: 1949182088}
   - component: {fileID: 1949182087}
+  - component: {fileID: 1949182090}
   m_Layer: 0
   m_Name: Cup02_gold
   m_TagString: Untagged
@@ -12768,6 +12769,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1949182085}
   m_Mesh: {fileID: 4300000, guid: bab41b0e9e91c2b42825c4b0099c807d, type: 3}
+--- !u!114 &1949182090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1949182085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87417530e7885146a3d0be5b6246d35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mat: {fileID: 2100000, guid: 0425e68f4d8b1854b9c38d669ebcc31c, type: 2}
+  sequence: 0
 --- !u!1 &1959843142
 GameObject:
   m_ObjectHideFlags: 0
