@@ -165,6 +165,7 @@ Material:
     - _CullMode: 2
     - _CullModeForward: 2
     - _Cutoff: 0.5
+    - _CutoffHeight: -6.2
     - _DepthOffsetEnable: 0
     - _DetailAlbedoScale: 1
     - _DetailNormalScale: 1
@@ -174,13 +175,14 @@ Material:
     - _DisplacementLockObjectScale: 1
     - _DisplacementLockTilingScale: 1
     - _DisplacementMode: 0
-    - _DissolveEdge: 0.012
-    - _DissolveSlider: 0.811
+    - _DissolveEdge: 0.082
+    - _DissolveSlider: 0.859
     - _DoubleSidedEnable: 0
     - _DoubleSidedGIMode: 0
     - _DoubleSidedNormalMode: 1
     - _DstBlend: 0
-    - _EdgeIntensity: 3.26
+    - _EdgeIntensity: 0
+    - _EdgeWidth: 0.4
     - _EmissiveColorMode: 1
     - _EmissiveExposureWeight: 0.38
     - _EmissiveIntensity: 1.3350785
@@ -190,7 +192,7 @@ Material:
     - _EnableGeometricSpecularAA: 0
     - _EnergyConservingSpecularColor: 1
     - _ExcludeFromTUAndAA: 0
-    - _ExposureWeight: 0.09
+    - _ExposureWeight: 0.96
     - _HeightAmplitude: 0.02
     - _HeightCenter: 0.5
     - _HeightMapParametrization: 0
@@ -200,6 +202,7 @@ Material:
     - _HeightPoMAmplitude: 2
     - _HeightTessAmplitude: 2
     - _HeightTessCenter: 0.5
+    - _Intensity: 0
     - _InvTilingScale: 1
     - _Ior: 1.5
     - _IridescenceMask: 1
@@ -209,6 +212,8 @@ Material:
     - _Metallic: 0
     - _MetallicRemapMax: 1
     - _MetallicRemapMin: 0
+    - _NoiseScale: 70
+    - _NoiseStrength: 7.9
     - _NormalMapSpace: 0
     - _NormalScale: 1
     - _ObjectSpaceUVMapping: 0
@@ -225,7 +230,7 @@ Material:
     - _RefractionModel: 0
     - _RenderQueueType: 1
     - _RequireSplitLighting: 0
-    - _Smoothness: 0.49
+    - _Smoothness: 0.55
     - _SmoothnessRemapMax: 1
     - _SmoothnessRemapMin: 0
     - _SpecularAAScreenSpaceVariance: 0.1
@@ -272,7 +277,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
-    - _EdgeColor: {r: 8.528146, g: 2.2258992, b: 3.9799454, a: 0}
+    - _EdgeColor: {r: 10992.048, g: 1209.8153, b: 4864.481, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissiveColor: {r: 0.038888983, g: 0.8911821, b: 0.15152225, a: 1.3350785}
     - _EmissiveColorLDR: {r: 0.18676074, g: 0.836478, b: 0.3710787, a: 1}
