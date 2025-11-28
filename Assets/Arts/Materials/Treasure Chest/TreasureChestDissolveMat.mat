@@ -165,7 +165,7 @@ Material:
     - _CullMode: 2
     - _CullModeForward: 2
     - _Cutoff: 0.5
-    - _CutoffHeight: -6.5
+    - _CutoffHeight: 127.79862
     - _DepthOffsetEnable: 0
     - _DetailAlbedoScale: 1
     - _DetailNormalScale: 1
@@ -277,7 +277,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
-    - _EdgeColor: {r: 10992.048, g: 1209.8153, b: 4864.481, a: 0}
+    - _EdgeColor: {r: 13567.6875, g: 9926.607, b: 1215.9717, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissiveColor: {r: 0.038888983, g: 0.8911821, b: 0.15152225, a: 1.3350785}
     - _EmissiveColorLDR: {r: 0.18676074, g: 0.836478, b: 0.3710787, a: 1}

@@ -14,17 +14,17 @@ public class SetGoerboy : MonoBehaviour
         transfromChild = transform.GetChild(0);
         savedPos = transform.position;
 
-        relative = Quaternion.Inverse(transfromChild.rotation) * transform.rotation;
+        // relative = Quaternion.Inverse(transfromChild.rotation) * transform.rotation;
     }
 
     // Update is called once per frame
     void Update()
     {
-        transfromChild.position += transform.position - savedPos;
-        Debug.Log("Pos of Goerboy(subtract): " + (transfromChild.position).ToString());
-        savedPos = transform.position;
+        // transfromChild.position += transform.position - savedPos;
+        // Debug.Log("Pos of Goerboy(subtract): " + (transfromChild.position).ToString());
+        // savedPos = transform.position;
 
-        transfromChild.rotation = transform.rotation * relative;
+        // transfromChild.rotation = transform.rotation * relative;
 
         
     }
