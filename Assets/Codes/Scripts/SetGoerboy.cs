@@ -21,8 +21,11 @@ public class SetGoerboy : MonoBehaviour
     void Update()
     {
         transfromChild.position += transform.position - savedPos;
+        Debug.Log("Pos of Goerboy(subtract): " + (transfromChild.position).ToString());
         savedPos = transform.position;
 
         transfromChild.rotation = transform.rotation * relative;
+
+        
     }
 }

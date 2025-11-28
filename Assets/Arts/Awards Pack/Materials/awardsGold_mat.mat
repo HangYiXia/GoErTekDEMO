@@ -121,7 +121,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OnesTex:
-        m_Texture: {fileID: 2800000, guid: dca4b373db0f4f346ba8ba6e999bcf53, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0bb2dab1934df6c40bad830ab9ff54c2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
@@ -145,7 +145,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TensTex:
-        m_Texture: {fileID: 2800000, guid: 8df556cb41a8fa945aff419e53b3ae47, type: 3}
+        m_Texture: {fileID: 2800000, guid: 64f22c57815786545a7a4f34f0a49383, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ThicknessMap:
