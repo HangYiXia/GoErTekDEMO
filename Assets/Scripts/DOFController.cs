@@ -31,6 +31,7 @@ public class DOFController : MonoBehaviour
     
 
     private MyGaussianBlurSinglePass myGaussianBlur; // 缓存自定义效果的引用
+    private AntiDistortion antiDistortion;
     private Vector3 focusPosition;
 
     // 在你的类顶部添加这个变量
@@ -135,6 +136,16 @@ public class DOFController : MonoBehaviour
         {
             Debug.LogError("在指定的 Volume Profile 中没有找到 MyGaussianBlurSinglePass！请检查 Volume Profile 的设置。");
         }
+        
+        if (globalVolume.profile.TryGet<AntiDistortion>(out var customEffect2))
+        {
+            antiDistortion = customEffect2;
+            Debug.Log("成功找到 AntiDistortion 效果！");
+        }
+        else
+        {
+            Debug.LogError("在指定的 Volume Profile 中没有找到 AntiDistortion！请检查 Volume Profile 的设置。");
+        }
 
         if (xeryonManager != null)
         {
@@ -209,8 +220,10 @@ public class DOFController : MonoBehaviour
         if (focalLength <= 0 || kernelRadius < 0 || mainCamera == null)
         {
             Debug.LogError("Invalid parameters in CacMaxCoCSize");
-            return 1e-5f;
+            return 4e-5f;
         }
+
+        return 4e-5f;
         
         int rtHeight = mainCamera.pixelHeight; // 渲染目标宽度（像素）
         float fov = mainCamera.fieldOfView;  // 相机视场角（度，默认垂直视场角）
@@ -224,11 +237,10 @@ public class DOFController : MonoBehaviour
         float maxCoCSize = blurRangePixel * pixelWorldSize * 0.00002f;
         
         Debug.Log($"Max CoC Size = {maxCoCSize} meter");
-        maxCoCSize = 4e-5f;
         return maxCoCSize;
     }
 
-    void OnCompeleteSetXeryon(float finishedTime)
+    void OnCompeleteSetXeryon(float finishedTime, float depth, int xeryonValue)
     {
         curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         curItem.state = "end";
@@ -236,9 +248,12 @@ public class DOFController : MonoBehaviour
         
         lastStartTime = finishedTime;
         itemList.Add(curItem);
+        
+        SetDepthForBlurPass(depth);
+        SetXeryonValueForAntiDistortion(xeryonValue);
     }
 
-    void SetXeryon(int value)
+    void SetXeryon(int value, float depth = 1.0f)
     {
         return;
         Debug.Log("SetXeryon is called");
@@ -253,12 +268,23 @@ public class DOFController : MonoBehaviour
         if (xeryonHardwareManager != null)
         {
             xeryonHardwareManager.SetXeryonL(value);
-            xeryonHardwareManager.SetXeryonR(value, OnCompeleteSetXeryon);
+            xeryonHardwareManager.SetXeryonR(value, OnCompeleteSetXeryon, depth);
         }
         else
         {
             Debug.LogError("xeryonHardwareManager is null");
         }
+    }
+
+    void SetDepthForBlurPass(float depth)
+    {
+        myGaussianBlur.focalLength.value = depth;
+        myGaussianBlur.maxCoCsize.value = CacMaxCoCSize(depth, myGaussianBlur.radius.value, ref dofCamera);
+    }
+
+    void SetXeryonValueForAntiDistortion(int value)
+    {
+        antiDistortion.xeryonValue.value = value;
     }
     void Update()
     {
@@ -272,29 +298,14 @@ public class DOFController : MonoBehaviour
 
         if (xeryonTimer >= xeryonInterval)
         {
-            // 时间间隔（1秒）已到，执行函数
-            SetXeryon(Mathf.Clamp(Mathf.CeilToInt(LinearMap(depth, 3.0f, 35.0f)), 0, 600));
+            SetXeryon(Mathf.Clamp(Mathf.CeilToInt(LinearMap(depth, 3.0f, 35.0f)), 0, 600), depth);
 
             // 重置计时器
             xeryonTimer -= xeryonInterval;
         }
-
-
-        /*
-        myGaussianBlur.nearBlurEnd.value = GetNearEnd(depth);
-        myGaussianBlur.nearBlurStart.value = myGaussianBlur.nearBlurEnd.value - 8.0f;
-        Debug.Log("myGaussianBlur.nearBlurEnd.value = " + myGaussianBlur.nearBlurEnd.value);
-        Debug.Log("myGaussianBlur.nearBlurStart.value = " + myGaussianBlur.nearBlurStart.value);
-
-        myGaussianBlur.farBlurStart.value = GetFarStart(depth);
-        myGaussianBlur.farBlurEnd.value = myGaussianBlur.farBlurStart.value + 8.0f;
-        Debug.Log("myGaussianBlur.farBlurStart.value = " + myGaussianBlur.farBlurStart.value);
-        Debug.Log("myGaussianBlur.farBlurEnd.value = " + myGaussianBlur.farBlurEnd.value);
-        */
         
-        myGaussianBlur.focalLength.value = depth;
-        myGaussianBlur.maxCoCsize.value = CacMaxCoCSize(depth, myGaussianBlur.radius.value, ref dofCamera);
-
+        //SetDepthForBlurPass(depth);
+        
         if (Input.GetKeyDown(KeyCode.Space))
         {
             SaveToDisk(outputPath);

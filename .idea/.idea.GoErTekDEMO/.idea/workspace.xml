@@ -7,8 +7,9 @@
     <list default="true" id="c2e99a5c-4b05-4c71-9b63-fb5a321e62af" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Arts/sequence.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Arts/sequence.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/T01 Wild/T1WildSkyVolume.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/T01 Wild/T1WildSkyVolume.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/AntiDistortion/AntiDistortion.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AntiDistortion/AntiDistortion.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/DOFController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/DOFController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/VAC/XeryonHardwareManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/VAC/XeryonHardwareManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,6 +113,7 @@
       <workItem from="1764138369523" duration="640000" />
       <workItem from="1764140380427" duration="4986000" />
       <workItem from="1764392418497" duration="1063000" />
+      <workItem from="1764487428563" duration="3419000" />
     </task>
     <servers />
   </component>

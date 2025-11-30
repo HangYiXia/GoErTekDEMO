@@ -28,6 +28,8 @@ public sealed class AntiDistortion : CustomPostProcessVolumeComponent, IPostProc
     // 对应 Shader 中的 _Screen_Height
     [Tooltip("Screen Height for distortion calculation.")]
     public FloatParameter screenHeight = new FloatParameter(100f);
+    
+    public IntParameter xeryonValue = new IntParameter(0);
 
     // 对应 Shader 中的 _K_R
     [Tooltip("Red channel distortion coefficients (x=k1, y=k2, z=k3).")]
@@ -40,6 +42,8 @@ public sealed class AntiDistortion : CustomPostProcessVolumeComponent, IPostProc
     // 对应 Shader 中的 _K_B
     [Tooltip("Blue channel distortion coefficients (x=k1, y=k2, z=k3).")]
     public Vector3Parameter kB = new Vector3Parameter(new Vector3(1, 1, 1));
+    
+    
 
 
     public BoolParameter enabled = new BoolParameter(true);

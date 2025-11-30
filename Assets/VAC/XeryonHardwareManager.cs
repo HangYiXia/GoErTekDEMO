@@ -113,7 +113,7 @@ public class XeryonHardwareManager : MonoBehaviour
     /// 仅在 VariFocal 模式关闭时 (curVariFocal == 0) 才发送命令。
     /// </summary>
     /// <param name="value">逻辑位置值</param>
-    public async void SetXeryonL(int value, Action<float> onComplete = null)
+    public async void SetXeryonL(int value, Action<float, float, int> onComplete = null, float depth = 1.0f)
     {
         if (curVariFocal == 0)
         {
@@ -128,7 +128,7 @@ public class XeryonHardwareManager : MonoBehaviour
             */
             
             float finishTime = Time.realtimeSinceStartup * 1000.0f;
-            onComplete?.Invoke(finishTime);
+            onComplete?.Invoke(finishTime, depth, value);
         }
     }
 
@@ -137,7 +137,7 @@ public class XeryonHardwareManager : MonoBehaviour
     /// 仅在 VariFocal 模式关闭时 (curVariFocal == 0) 才发送命令。
     /// </summary>
     /// <param name="value">逻辑位置值</param>
-    public async void SetXeryonR(int value, Action<float> onComplete = null)
+    public async void SetXeryonR(int value, Action<float, float, int> onComplete = null, float depth = 1.0f)
     {
         if (curVariFocal == 0)
         {
@@ -152,7 +152,7 @@ public class XeryonHardwareManager : MonoBehaviour
             */
             
             float finishTime = Time.realtimeSinceStartup * 1000.0f;
-            onComplete?.Invoke(finishTime);
+            onComplete?.Invoke(finishTime, depth, value);
         }
     }
 
