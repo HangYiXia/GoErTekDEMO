@@ -118,14 +118,14 @@ public class XeryonHardwareManager : MonoBehaviour
         if (curVariFocal == 0)
         {
             curXeryonL = -6000 + value * 20;
-            await Task.Run(() => { XC_ISetDPOS(ctrlPtrL, curXeryonL); });
-            /*
+            //await Task.Run(() => { XC_ISetDPOS(ctrlPtrL, curXeryonL); });
+            
             await Task.Run(() =>
             {
                 int i = 0;
                 while (i++ < 100000) ;
             });
-            */
+            
             
             float finishTime = Time.realtimeSinceStartup * 1000.0f;
             onComplete?.Invoke(finishTime, depth, value);
@@ -142,14 +142,14 @@ public class XeryonHardwareManager : MonoBehaviour
         if (curVariFocal == 0)
         {
             curXeryonR = -6000 + value * 20;
-            await Task.Run(() => { XC_ISetDPOS(ctrlPtrR, -curXeryonR); });
-            /*
+            //await Task.Run(() => { XC_ISetDPOS(ctrlPtrR, -curXeryonR); });
+            
             await Task.Run(() =>
             {
                 int i = 0;
                 while (i++ < 100000) ;
             });
-            */
+            
             
             float finishTime = Time.realtimeSinceStartup * 1000.0f;
             onComplete?.Invoke(finishTime, depth, value);

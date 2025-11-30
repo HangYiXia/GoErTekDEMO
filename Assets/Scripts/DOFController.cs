@@ -41,7 +41,10 @@ public class DOFController : MonoBehaviour
 
     private bool ok = false;
 
-    private string outputPath = "E:\\UnityProjects\\result\\xeryonTime.csv";
+    private string outputPath = "D:\\DALAB\\HengXiang\\GeEr\\xeryonTime.csv";
+
+    private readonly object _lockObject = new object();
+    private bool isSettingXeryon = false;
 
     struct Item
     {
@@ -49,13 +52,17 @@ public class DOFController : MonoBehaviour
         public string state;
         public string curTime;
         public float opTime;
+        public float blurTime;
+        public float antiDistortionTime;
 
-        Item(float _curDepth, string _state, string _curTime, float _opTime)
+        Item(float _curDepth, string _state, string _curTime, float _opTime, float _blurTime, float _antiDistortionTime)
         {
             curDepth = _curDepth;
             state = _state;
             curTime = _curTime;
             opTime = _opTime;
+            blurTime = _blurTime;
+            antiDistortionTime = _antiDistortionTime;
         }
     }
 
@@ -76,7 +83,7 @@ public class DOFController : MonoBehaviour
         StringBuilder sb = new StringBuilder();
 
         // 3. 写入表头（列名）
-        sb.AppendLine("depth,state,curTime,opTime");
+        sb.AppendLine("depth,opState,curTime,opTime,blurTime,antiDistortionTime");
 
         // 4. 遍历列表写入数据
         foreach (var item in itemList)
@@ -84,7 +91,7 @@ public class DOFController : MonoBehaviour
             // 如果 state 或 curTime 中可能包含英文逗号，建议用双引号包裹：
             // string line = $"{item.curDepth},\"{item.state}\",\"{item.curTime}\",{item.opTime}";
         
-            string line = $"{item.curDepth},{item.state},{item.curTime},{item.opTime}";
+            string line = $"{item.curDepth},{item.state},{item.curTime},{item.opTime},{item.blurTime},{item.antiDistortionTime}";
             sb.AppendLine(line);
         }
 
@@ -137,6 +144,7 @@ public class DOFController : MonoBehaviour
             Debug.LogError("在指定的 Volume Profile 中没有找到 MyGaussianBlurSinglePass！请检查 Volume Profile 的设置。");
         }
         
+        
         if (globalVolume.profile.TryGet<AntiDistortion>(out var customEffect2))
         {
             antiDistortion = customEffect2;
@@ -146,6 +154,7 @@ public class DOFController : MonoBehaviour
         {
             Debug.LogError("在指定的 Volume Profile 中没有找到 AntiDistortion！请检查 Volume Profile 的设置。");
         }
+        
 
         if (xeryonManager != null)
         {
@@ -163,6 +172,27 @@ public class DOFController : MonoBehaviour
         ok = false;
     }
 
+    // 写入操作
+    public void SetXeryonSettingState(bool state)
+    {
+        // 进入临界区
+        lock (_lockObject)
+        {
+            isSettingXeryon = state;
+            // 在这里还可以做其他需要线程安全的操作
+        }
+        // 退出临界区，锁自动释放
+    }
+
+    // 读取操作
+    public bool GetXeryonSettingState()
+    {
+        lock (_lockObject)
+        {
+            return isSettingXeryon;
+        }
+    }
+    
     public void IsOkToSetXeryon()
     {
         ok = true;
@@ -171,48 +201,6 @@ public class DOFController : MonoBehaviour
     private float LinearMap(float x, float minV, float maxV)
     {
         return (x - minV) / (maxV - minV) * 600;
-    }
-
-    private float GetNearEnd(float curDepth)
-    {
-        float curDiopter = 1.0f / curDepth;
-        if (curDiopter > 0.17f)
-        {
-            float nearStartDiopter = curDiopter + 0.02f;
-            return 1.0f / nearStartDiopter;
-        }
-        else
-        {
-            float nearStartDiopter = curDiopter + 0.02f;
-            return 1.0f / nearStartDiopter;
-        }
-    }
-
-    private float GetNearStart(float curDepth)
-    {
-        float curDiopter = 1.0f / curDepth;
-        if(curDiopter > 0.17f)
-        {
-            float nearStartDiopter = curDiopter + 0.02f + 0.001f;
-            return 1.0f / nearStartDiopter;
-        }
-        else
-        {
-            float nearStartDiopter = curDiopter + 0.02f + 0.001f;
-            return 1.0f / nearStartDiopter;
-        }
-    }
-
-    private float GetFarStart(float curDepth)
-    {
-        float farStartDiopter = Mathf.Max(1.0f / curDepth - 0.05f, 0.0001f);
-        return 1.0f / farStartDiopter;
-    }
-
-    private float GetFarEnd(float curDepth)
-    {
-        float farStartDiopter = Mathf.Max(1.0f / curDepth - 0.05f - 0.001f, 0.0001f);
-        return 1.0f / farStartDiopter;
     }
 
     private float CacMaxCoCSize(float focalLength, float kernelRadius, ref Camera mainCamera)
@@ -242,29 +230,38 @@ public class DOFController : MonoBehaviour
 
     void OnCompeleteSetXeryon(float finishedTime, float depth, int xeryonValue)
     {
+        Debug.Log("OnCompeleteSetXeryon is called");
+        curItem.curDepth = depth;
         curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        curItem.state = "end";
+        curItem.state = "End";
         curItem.opTime = finishedTime - lastStartTime;
-        
-        lastStartTime = finishedTime;
+        curItem.blurTime = myGaussianBlur.GetGpuExecTimeMs();
+        curItem.antiDistortionTime = antiDistortion.GetGpuExecTimeMs();
         itemList.Add(curItem);
         
+        SetXeryonSettingState(false);
+        
+        
+        lastStartTime = finishedTime;
         SetDepthForBlurPass(depth);
         SetXeryonValueForAntiDistortion(xeryonValue);
     }
 
     void SetXeryon(int value, float depth = 1.0f)
     {
-        return;
-        Debug.Log("SetXeryon is called");
         lastStartTime = Time.realtimeSinceStartup * 1000.0f;
+        
+        curItem.curDepth = depth;
         curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         curItem.state = "Start";
         curItem.opTime = 0;
-        
+        curItem.blurTime = myGaussianBlur.GetGpuExecTimeMs();
+        curItem.antiDistortionTime = antiDistortion.GetGpuExecTimeMs();
         itemList.Add(curItem);
-        if(!ok)return;
-        return; // de-comment it when crashing
+
+        SetXeryonSettingState(true);
+        //if(!ok)return;
+        //return; // de-comment it when crashing
         if (xeryonHardwareManager != null)
         {
             xeryonHardwareManager.SetXeryonL(value);
@@ -290,7 +287,14 @@ public class DOFController : MonoBehaviour
     {
         focusPosition = useEyeTracking ? eyeTrackingPosition : focusGameObject.GetComponent<Transform>().position;
         float depth = CalcDepthFromDOFCamera(dofCamera, focusPosition);
+        
+        curItem.opTime = 0;
+        curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         curItem.curDepth = depth;
+        curItem.blurTime = myGaussianBlur.GetGpuExecTimeMs();
+        curItem.antiDistortionTime = antiDistortion.GetGpuExecTimeMs();
+        curItem.state = GetXeryonSettingState() ? "Setting" : "Idle";
+        itemList.Add(curItem);
         //Debug.Log("focus game object's depth = " + depth);
 
         // --- 2. 使用计时器控制 SetXeryon ---
@@ -303,8 +307,6 @@ public class DOFController : MonoBehaviour
             // 重置计时器
             xeryonTimer -= xeryonInterval;
         }
-        
-        //SetDepthForBlurPass(depth);
         
         if (Input.GetKeyDown(KeyCode.Space))
         {
