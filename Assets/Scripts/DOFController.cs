@@ -240,6 +240,7 @@ public class DOFController : MonoBehaviour
 
     void SetXeryon(int value)
     {
+        return;
         Debug.Log("SetXeryon is called");
         lastStartTime = Time.realtimeSinceStartup * 1000.0f;
         curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -248,7 +249,7 @@ public class DOFController : MonoBehaviour
         
         itemList.Add(curItem);
         if(!ok)return;
-        //return; // de-comment it when crashing
+        return; // de-comment it when crashing
         if (xeryonHardwareManager != null)
         {
             xeryonHardwareManager.SetXeryonL(value);
