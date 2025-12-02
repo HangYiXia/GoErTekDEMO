@@ -282,8 +282,8 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: {x: 1, y: 1, z: 1}
   enabled:
-    m_OverrideState: 0
-    m_Value: 1
+    m_OverrideState: 1
+    m_Value: 0
 --- !u!114 &-4331429661209049123
 MonoBehaviour:
   m_ObjectHideFlags: 3
