@@ -1,7 +1,10 @@
 using System.Collections;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
+using System.Text;
+using System.IO;
 using UnityEngine.Rendering.HighDefinition;
 
 public class DOFController : MonoBehaviour
@@ -28,13 +31,90 @@ public class DOFController : MonoBehaviour
     
 
     private MyGaussianBlurSinglePass myGaussianBlur; // 缓存自定义效果的引用
+    private AntiDistortion antiDistortion;
     private Vector3 focusPosition;
 
     // 在你的类顶部添加这个变量
     private float xeryonTimer = 0.0f;
     public float xeryonInterval = 1.0f; // 方便以后修改间隔
+    private float lastStartTime = 0.0f;
 
     private bool ok = false;
+
+    private string outputPath = "D:\\DALAB\\HengXiang\\GeEr\\xeryonTime.csv";
+
+    private readonly object _lockObject = new object();
+    private bool isSettingXeryon = false;
+
+    struct Item
+    {
+        public float curDepth;
+        public string state;
+        public string curTime;
+        public float opTime;
+        public float blurTime;
+        public float antiDistortionTime;
+
+        Item(float _curDepth, string _state, string _curTime, float _opTime, float _blurTime, float _antiDistortionTime)
+        {
+            curDepth = _curDepth;
+            state = _state;
+            curTime = _curTime;
+            opTime = _opTime;
+            blurTime = _blurTime;
+            antiDistortionTime = _antiDistortionTime;
+        }
+    }
+
+    private Item curItem;
+
+    private List<Item> itemList = new List<Item>();
+
+    void SaveToDisk(string path)
+    {
+        // 1. 安全检查：如果列表为空，可以选择不保存或保存空表头
+        if (itemList == null || itemList.Count == 0)
+        {
+            Debug.LogWarning("列表为空，没有数据被保存。");
+            return;
+        }
+
+        // 2. 使用 StringBuilder 拼接数据（性能优于字符串直接相加）
+        StringBuilder sb = new StringBuilder();
+
+        // 3. 写入表头（列名）
+        sb.AppendLine("depth,opState,curTime,opTime,blurTime,antiDistortionTime");
+
+        // 4. 遍历列表写入数据
+        foreach (var item in itemList)
+        {
+            // 如果 state 或 curTime 中可能包含英文逗号，建议用双引号包裹：
+            // string line = $"{item.curDepth},\"{item.state}\",\"{item.curTime}\",{item.opTime}";
+        
+            string line = $"{item.curDepth},{item.state},{item.curTime},{item.opTime},{item.blurTime},{item.antiDistortionTime}";
+            sb.AppendLine(line);
+        }
+
+        try
+        {
+            // 5. 确保目录存在（可选，防止路径文件夹不存在报错）
+            string directory = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            // 6. 写入文件
+            // new UTF8Encoding(true) 表示带BOM的UTF8，这对Excel正确识别中文至关重要
+            File.WriteAllText(path, sb.ToString(), new UTF8Encoding(true));
+        
+            Debug.Log($"保存成功: {path}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"保存失败: {e.Message}");
+        }
+    }
     void Start()
     {
         // 检查是否在 Inspector 中指定了 Volume
@@ -63,6 +143,18 @@ public class DOFController : MonoBehaviour
         {
             Debug.LogError("在指定的 Volume Profile 中没有找到 MyGaussianBlurSinglePass！请检查 Volume Profile 的设置。");
         }
+        
+        
+        if (globalVolume.profile.TryGet<AntiDistortion>(out var customEffect2))
+        {
+            antiDistortion = customEffect2;
+            Debug.Log("成功找到 AntiDistortion 效果！");
+        }
+        else
+        {
+            Debug.LogError("在指定的 Volume Profile 中没有找到 AntiDistortion！请检查 Volume Profile 的设置。");
+        }
+        
 
         if (xeryonManager != null)
         {
@@ -80,6 +172,27 @@ public class DOFController : MonoBehaviour
         ok = false;
     }
 
+    // 写入操作
+    public void SetXeryonSettingState(bool state)
+    {
+        // 进入临界区
+        lock (_lockObject)
+        {
+            isSettingXeryon = state;
+            // 在这里还可以做其他需要线程安全的操作
+        }
+        // 退出临界区，锁自动释放
+    }
+
+    // 读取操作
+    public bool GetXeryonSettingState()
+    {
+        lock (_lockObject)
+        {
+            return isSettingXeryon;
+        }
+    }
+    
     public void IsOkToSetXeryon()
     {
         ok = true;
@@ -90,107 +203,115 @@ public class DOFController : MonoBehaviour
         return (x - minV) / (maxV - minV) * 600;
     }
 
-    private float GetNearEnd(float curDepth)
+    private float CacMaxCoCSize(float focalLength, float kernelRadius, ref Camera mainCamera)
     {
-        float curDiopter = 1.0f / curDepth;
-        if (curDiopter > 0.17f)
+        if (focalLength <= 0 || kernelRadius < 0 || mainCamera == null)
         {
-            float nearStartDiopter = curDiopter + 0.02f;
-            return 1.0f / nearStartDiopter;
+            Debug.LogError("Invalid parameters in CacMaxCoCSize");
+            return 4e-5f;
         }
-        else
-        {
-            float nearStartDiopter = curDiopter + 0.02f;
-            return 1.0f / nearStartDiopter;
-        }
+
+        return 4e-5f;
+        
+        int rtHeight = mainCamera.pixelHeight; // 渲染目标宽度（像素）
+        float fov = mainCamera.fieldOfView;  // 相机视场角（度，默认垂直视场角）
+        float focusDistance = focalLength;
+        
+        float halfFovRad = fov * Mathf.Deg2Rad / 2f; // 视场角的一半（弧度）
+        float focusPlaneHeight = 2 * focusDistance * Mathf.Tan(halfFovRad); // 对焦平面的屏幕总宽度（米）
+        float pixelWorldSize = focusPlaneHeight / rtHeight; // 像素世界尺寸（米/像素）
+        float blurRangePixel = 2 * kernelRadius;
+        
+        float maxCoCSize = blurRangePixel * pixelWorldSize * 0.00002f;
+        
+        Debug.Log($"Max CoC Size = {maxCoCSize} meter");
+        return maxCoCSize;
     }
 
-    private float GetNearStart(float curDepth)
+    void OnCompeleteSetXeryon(float finishedTime, float depth, int xeryonValue)
     {
-        float curDiopter = 1.0f / curDepth;
-        if(curDiopter > 0.17f)
-        {
-            float nearStartDiopter = curDiopter + 0.02f + 0.001f;
-            return 1.0f / nearStartDiopter;
-        }
-        else
-        {
-            float nearStartDiopter = curDiopter + 0.02f + 0.001f;
-            return 1.0f / nearStartDiopter;
-        }
+        Debug.Log("OnCompeleteSetXeryon is called");
+        curItem.curDepth = depth;
+        curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        curItem.state = "End";
+        curItem.opTime = finishedTime - lastStartTime;
+        curItem.blurTime = myGaussianBlur.GetGpuExecTimeMs();
+        curItem.antiDistortionTime = antiDistortion.GetGpuExecTimeMs();
+        itemList.Add(curItem);
+        
+        SetXeryonSettingState(false);
+        
+        
+        lastStartTime = finishedTime;
+        SetDepthForBlurPass(depth);
+        SetXeryonValueForAntiDistortion(xeryonValue);
     }
 
-    private float GetFarStart(float curDepth)
+    void SetXeryon(int value, float depth = 1.0f)
     {
-        float farStartDiopter = Mathf.Max(1.0f / curDepth - 0.05f, 0.0001f);
-        return 1.0f / farStartDiopter;
-    }
+        lastStartTime = Time.realtimeSinceStartup * 1000.0f;
+        
+        curItem.curDepth = depth;
+        curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        curItem.state = "Start";
+        curItem.opTime = 0;
+        curItem.blurTime = myGaussianBlur.GetGpuExecTimeMs();
+        curItem.antiDistortionTime = antiDistortion.GetGpuExecTimeMs();
+        itemList.Add(curItem);
 
-    private float GetFarEnd(float curDepth)
-    {
-        float farStartDiopter = Mathf.Max(1.0f / curDepth - 0.05f - 0.001f, 0.0001f);
-        return 1.0f / farStartDiopter;
-    }
-
-
-    void SetXeryon(int value)
-    {
-        Debug.Log("SetXeryon is called");
-        if(!ok)return;
-        return; // de-comment it when crashing
+        SetXeryonSettingState(true);
+        //if(!ok)return;
+        //return; // de-comment it when crashing
         if (xeryonHardwareManager != null)
         {
             xeryonHardwareManager.SetXeryonL(value);
-            xeryonHardwareManager.SetXeryonR(value);
+            xeryonHardwareManager.SetXeryonR(value, OnCompeleteSetXeryon, depth);
         }
         else
         {
             Debug.LogError("xeryonHardwareManager is null");
         }
     }
+
+    void SetDepthForBlurPass(float depth)
+    {
+        myGaussianBlur.focalLength.value = depth;
+        myGaussianBlur.maxCoCsize.value = CacMaxCoCSize(depth, myGaussianBlur.radius.value, ref dofCamera);
+    }
+
+    void SetXeryonValueForAntiDistortion(int value)
+    {
+        antiDistortion.xeryonValue.value = value;
+    }
     void Update()
     {
         focusPosition = useEyeTracking ? eyeTrackingPosition : focusGameObject.GetComponent<Transform>().position;
         float depth = CalcDepthFromDOFCamera(dofCamera, focusPosition);
-        Debug.Log("focus game object's depth = " + depth);
+        
+        curItem.opTime = 0;
+        curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        curItem.curDepth = depth;
+        curItem.blurTime = myGaussianBlur.GetGpuExecTimeMs();
+        curItem.antiDistortionTime = antiDistortion.GetGpuExecTimeMs();
+        curItem.state = GetXeryonSettingState() ? "Setting" : "Idle";
+        itemList.Add(curItem);
+        //Debug.Log("focus game object's depth = " + depth);
 
         // --- 2. 使用计时器控制 SetXeryon ---
         xeryonTimer += Time.deltaTime; // 累加每帧的时间
 
         if (xeryonTimer >= xeryonInterval)
         {
-            // 时间间隔（1秒）已到，执行函数
-            SetXeryon(Mathf.Clamp(Mathf.CeilToInt(LinearMap(depth, 3.0f, 35.0f)), 0, 600));
+            SetXeryon(Mathf.Clamp(Mathf.CeilToInt(LinearMap(depth, 3.0f, 35.0f)), 0, 600), depth);
 
             // 重置计时器
-            // 使用减法而不是 xeryonTimer = 0.0f;
-            // 这样可以防止"漂移"，确保长期来看平均每1.0秒执行一次
             xeryonTimer -= xeryonInterval;
         }
-
-        /*
-        myGaussianBlur.nearBlurEnd.value = depth - nearOffset;
-        myGaussianBlur.nearBlurStart.value = myGaussianBlur.nearBlurEnd.value - 1.2f;
-
-        myGaussianBlur.farBlurStart.value = depth + farOffset;
-        myGaussianBlur.farBlurEnd.value = myGaussianBlur.farBlurStart.value + 1.2f;
-        */
-
-        myGaussianBlur.nearBlurEnd.value = GetNearEnd(depth);
-        //myGaussianBlur.nearBlurStart.value = GetNearStart(depth);
-        myGaussianBlur.nearBlurStart.value = myGaussianBlur.nearBlurEnd.value - 8.0f;
-        if (depth < 6.0f)
+        
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            //myGaussianBlur.nearBlurStart.value = GetNearStart(depth) - 2.0f;
+            SaveToDisk(outputPath);
         }
-        Debug.Log("myGaussianBlur.nearBlurEnd.value = " + myGaussianBlur.nearBlurEnd.value);
-        Debug.Log("myGaussianBlur.nearBlurStart.value = " + myGaussianBlur.nearBlurStart.value);
-
-        myGaussianBlur.farBlurStart.value = GetFarStart(depth);
-        //myGaussianBlur.farBlurEnd.value = GetFarEnd(depth);
-        myGaussianBlur.farBlurEnd.value = myGaussianBlur.farBlurStart.value + 8.0f;
-        Debug.Log("myGaussianBlur.farBlurStart.value = " + myGaussianBlur.farBlurStart.value);
-        Debug.Log("myGaussianBlur.farBlurEnd.value = " + myGaussianBlur.farBlurEnd.value);
     }
 
     float CalcDepthFromDOFCamera(Camera dofCamera, Vector3 worldPosition)

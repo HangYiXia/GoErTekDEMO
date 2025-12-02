@@ -5,12 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2e99a5c-4b05-4c71-9b63-fb5a321e62af" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Arts/Awards Pack/Materials/awardsGold_mat.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Arts/Awards Pack/Materials/awardsGold_mat.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Arts/Materials/Treasure Chest/TreasureChestDissolveMat.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Arts/Materials/Treasure Chest/TreasureChestDissolveMat.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Arts/sequence.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Arts/sequence.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/T01 Wild.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/T01 Wild.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/T01 Wild/T1WildSkyVolume.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/T01 Wild/T1WildSkyVolume.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/AntiDistortion/AntiDistortion.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/AntiDistortion/AntiDistortion.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/DOFController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/DOFController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/MyDoF3/MyGasussianBlurSinglePass.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/MyDoF3/MyGasussianBlurSinglePass.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Settings/HDRPDefaultResources/HDRenderPipelineGlobalSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Settings/HDRPDefaultResources/HDRenderPipelineGlobalSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/PackageManagerSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/PackageManagerSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/VAC/XeryonHardwareManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/VAC/XeryonHardwareManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +24,11 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b0b044832c86429e90c306261f4bbd83177a00/0b/a5e400bd/Camera.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.render-pipelines.core@14.0.12/ShaderLibrary/Common.hlsl" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.valvesoftware.unity.openvr@970ac47786c4/Runtime/OpenVRLoader.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
@@ -105,6 +115,11 @@
       <workItem from="1762938017112" duration="9000" />
       <workItem from="1762938273598" duration="12000" />
       <workItem from="1762938327765" duration="3000" />
+      <workItem from="1764131011791" duration="6074000" />
+      <workItem from="1764138369523" duration="640000" />
+      <workItem from="1764140380427" duration="4986000" />
+      <workItem from="1764392418497" duration="1063000" />
+      <workItem from="1764487428563" duration="9636000" />
     </task>
     <servers />
   </component>

@@ -21,6 +21,12 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
     float _NearEnd;
     float _FarStart;
     float _FarEnd;
+
+    
+    float _F; // 对焦距离
+    float _f; // 镜头焦距
+    float _A; // 镜头光圈直径
+    float _MaxCocSize; // 最大CoC直径
     
 
     struct Attributes
@@ -85,6 +91,22 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         return max(nearFactor, farFactor);
     }
 
+    float CacCoCSize(float linearEyeDepth)
+    {
+        return abs((linearEyeDepth - _F) / _F) * _A * _f;
+    }
+
+    float CacAlphaByCoCSize(float cocSize)
+    {
+        return saturate(cocSize / _MaxCocSize);
+    }
+
+    float CacBlurFactor_V3(float linearEyeDepth)
+    {
+        float cocSize = CacCoCSize(linearEyeDepth);
+        return CacAlphaByCoCSize(cocSize);
+    }
+
     float4 GaussianBlur(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
@@ -110,7 +132,7 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         // --- 计算模糊因子 ---
         float depth = LoadCameraDepth(input.positionCS.xy);
         float linearDepth = LinearEyeDepth(depth, _ZBufferParams);
-        float blurFactor = CacBlurFactor_V2(linearDepth);
+        float blurFactor = CacBlurFactor_V3(linearDepth);
         
         
         float3 oriColor = LOAD_TEXTURE2D_X(_MainTex, input.texcoord * _ScreenSize.xy).rgb;
