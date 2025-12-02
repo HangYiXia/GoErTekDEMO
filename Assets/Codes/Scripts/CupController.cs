@@ -8,6 +8,8 @@ public class CupController : MonoBehaviour
     public int sequence = 0;
     private string path;
 
+    public bool numberReset = false;
+
     private String onesTexPath;
     private String tensTexPath;
     private Texture2D onesTex;
@@ -40,7 +42,7 @@ public class CupController : MonoBehaviour
         sequence = int.Parse(File.ReadAllText(path));
         sequence++;
 
-        if (sequence >= 100)
+        if (sequence >= 100 || numberReset)
         {
             sequence = 0;
         }
