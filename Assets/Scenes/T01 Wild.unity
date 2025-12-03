@@ -964,6 +964,8 @@ PlayableDirector:
     value: {fileID: 1949182085}
   - key: {fileID: 1280799327520812020, guid: 8c118c05056eb5b4f8f488914ad423d6, type: 2}
     value: {fileID: 973003311}
+  - key: {fileID: 5875180743677492680, guid: 8c118c05056eb5b4f8f488914ad423d6, type: 2}
+    value: {fileID: 2010836252}
   m_ExposedReferences:
     m_References: []
 --- !u!4 &207413074
@@ -2200,7 +2202,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &693269962
 Transform:
   m_ObjectHideFlags: 0
@@ -7278,7 +7280,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1837192020
 Transform:
   m_ObjectHideFlags: 0
@@ -8161,6 +8163,12 @@ Transform:
   - {fileID: 182695510}
   m_Father: {fileID: 1484922689}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2010836252 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3608373730142018104, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+    type: 3}
+  m_PrefabInstance: {fileID: 6713406928380323461}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2049772800
 GameObject:
   m_ObjectHideFlags: 0
@@ -8678,6 +8686,71 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: gemstone
+      objectReference: {fileID: 0}
+    - target: {fileID: 2045731958342862568, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3608373730142018104, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4283665974623536917, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_Time
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6865764949177661450, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_Time
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655496646847808552, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655496646847808552, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655496646847808552, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Name
+      value: Duration
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655496646847808552, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Value
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655496646847808552, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Name
+      value: Color
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655496646847808552, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655496646847808552, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.x
+      value: 253.0143
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655496646847808552, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.y
+      value: 114.20873
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655496646847808552, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Overridden
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
