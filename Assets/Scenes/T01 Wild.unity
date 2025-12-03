@@ -2232,6 +2232,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mat: {fileID: 2100000, guid: 0425e68f4d8b1854b9c38d669ebcc31c, type: 2}
   sequence: 0
+  numberReset: 0
 --- !u!95 &693269964
 Animator:
   serializedVersion: 5
@@ -5827,7 +5828,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1495593651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7310,6 +7311,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mat: {fileID: 2100000, guid: 0425e68f4d8b1854b9c38d669ebcc31c, type: 2}
   sequence: 0
+  numberReset: 0
 --- !u!95 &1837192022
 Animator:
   serializedVersion: 5
@@ -8016,6 +8018,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mat: {fileID: 2100000, guid: 0425e68f4d8b1854b9c38d669ebcc31c, type: 2}
   sequence: 0
+  numberReset: 0
 --- !u!1 &1959843142
 GameObject:
   m_ObjectHideFlags: 0
@@ -8690,7 +8693,7 @@ PrefabInstance:
     - target: {fileID: 2045731958342862568, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3608373730142018104, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
         type: 3}
@@ -8701,6 +8704,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Time
       value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6187291709012838735, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6865764949177661450, guid: 1461458be89f2ec4dad8b59f4dd60f3b,
         type: 3}

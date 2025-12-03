@@ -93,7 +93,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OnesTex:
-        m_Texture: {fileID: 2800000, guid: fbd3efd780651974c8afb88e5a909755, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0bb2dab1934df6c40bad830ab9ff54c2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecularColorMap:
@@ -113,7 +113,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TensTex:
-        m_Texture: {fileID: 2800000, guid: dbf474f327bae0a4dadef240a97ab31b, type: 3}
+        m_Texture: {fileID: 2800000, guid: 329a73c9211b7e44e866fa7d972b5eea, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ThicknessMap:

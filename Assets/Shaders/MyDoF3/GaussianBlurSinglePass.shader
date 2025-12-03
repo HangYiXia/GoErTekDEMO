@@ -96,6 +96,34 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         return abs((linearEyeDepth - _F) / _F) * _A * _f;
     }
 
+    bool FloatEqual(float a, float b)
+    {
+        return abs(a - b) < 1e-5f;
+    }
+
+    float CacCoCSize_V2(float linearEyeDepth)
+    {
+        if (linearEyeDepth <= _F)
+        {
+            return CacCoCSize(linearEyeDepth);
+        }
+        float delta = 10.0; // 建议将此变量提取为 Shader Property，方便在面板调节
+
+        // 1. 计算当前深度与对焦距离的绝对差值
+        float dist = linearEyeDepth - _F;
+
+        // 2. 引入死区 (Dead Zone)
+        // 如果 dist 小于 delta，结果为 0 (完全清晰)
+        // 如果 dist 大于 delta，结果从 0 开始线性增加
+        // 这样就形成了一个 flat 的底部： \__/ 形伏
+        float effectiveDist = max(0.0, dist - delta);
+
+        // 3. 代入原有公式
+        // 注意：原公式是 abs(depth - F) / F ...
+        // 现在我们用 effectiveDist 替换 abs(depth - F)
+        return (effectiveDist / _F) * _A * _f;
+    }
+
     float CacAlphaByCoCSize(float cocSize)
     {
         return saturate(cocSize / _MaxCocSize);
@@ -113,10 +141,17 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         float2 uv = input.texcoord;
 
         float sigma = max(_Radius * 0.25, 0.5);
-        int halfWidth = min((int)(sigma * 3.0), 10);   // 7×7 上限
+        int halfWidth = min((int)(sigma * 3.0), 10);  
         float3 blurColor = 0.0;
         float sum = 0.0;
 
+        
+        // --- 计算模糊因子 ---
+        float depth = LoadCameraDepth(input.positionCS.xy);
+        bool isSky = FloatEqual(depth , 0.0f);
+        float linearDepth = LinearEyeDepth(depth, _ZBufferParams);
+        float blurFactor = isSky ? 0.0f : CacBlurFactor_V3(linearDepth);
+        
         for (int dy = -halfWidth; dy <= halfWidth; ++dy)
         {
             for (int dx = -halfWidth; dx <= halfWidth; ++dx)
@@ -129,10 +164,6 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         }
         blurColor /= sum;
         
-        // --- 计算模糊因子 ---
-        float depth = LoadCameraDepth(input.positionCS.xy);
-        float linearDepth = LinearEyeDepth(depth, _ZBufferParams);
-        float blurFactor = CacBlurFactor_V3(linearDepth);
         
         
         float3 oriColor = LOAD_TEXTURE2D_X(_MainTex, input.texcoord * _ScreenSize.xy).rgb;
@@ -165,6 +196,103 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         */
         
         return float4(lerp(oriColor, blurColor, blurFactor), 1.0);
+    }
+
+    float4 GaussianBlur_BLFilter(Varyings input) : SV_Target
+    {
+        UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+        float2 uv = input.texcoord;
+        uint2 centerCoord = input.positionCS.xy;
+
+        // ---------------------------------------------------------
+        // 1. 准备中心数据 (Center Data)
+        // ---------------------------------------------------------
+        // 深度
+        float centerDepth = LoadCameraDepth(centerCoord);
+        float centerLinearDepth = LinearEyeDepth(centerDepth, _ZBufferParams);
+        
+        // 颜色 (为了计算颜色差异，我们需要先拿到中心点的颜色)
+        float3 centerColor = LOAD_TEXTURE2D_X(_MainTex, centerCoord).rgb;
+
+        // 计算模糊强度
+        float blurFactor = CacBlurFactor_V3(centerLinearDepth);
+
+        // 【优化】早退
+        if(blurFactor < 0.01)
+        {
+            return float4(centerColor, 1.0);
+        }
+
+        // ---------------------------------------------------------
+        // 2. 参数设置
+        // ---------------------------------------------------------
+        float sigma = max(_Radius * 0.25, 0.5);
+        int halfWidth = min((int)(sigma * 3.0), 10);  
+        
+        float3 finalColor = 0.0;
+        float sumWeight = 0.0;
+
+        // [参数] 深度敏感度：控制前景/背景分离
+        float depthSensitivity = 0.0; 
+        
+        // [参数] 颜色敏感度：控制是否保留纹理边缘
+        // 建议值：
+        // 0.0 = 不考虑颜色差异 (标准物理虚化)
+        // 1.0 ~ 10.0 = 抑制高光溢出，轻微保留边缘
+        // > 20.0 = 强烈的油画/磨皮效果，纹理内部不会糊
+        float colorSensitivity = 0.0; 
+
+        // ---------------------------------------------------------
+        // 3. 联合双边滤波循环 (Joint Bilateral Loop)
+        // ---------------------------------------------------------
+        for (int dy = -halfWidth; dy <= halfWidth; ++dy)
+        {
+            for (int dx = -halfWidth; dx <= halfWidth; ++dx)
+            {
+                float2 offset = float2(dx, dy) * _MainTex_TexelSize.xy;
+                uint2 sampleCoords = uint2((uv + offset) * _ScreenSize.xy);
+
+                // A. 【空间权重】 (Spatial Weight) - 高斯分布
+                float distSq = dx*dx + dy*dy;
+                float spatialWeight = exp(-distSq / (2.0 * sigma * sigma));
+
+                // 获取采样点数据
+                float sampleDepth = LoadCameraDepth(sampleCoords);
+                float sampleLinearDepth = LinearEyeDepth(sampleDepth, _ZBufferParams);
+                float3 sampleColor = LOAD_TEXTURE2D_X(_MainTex, sampleCoords).rgb;
+
+                // B. 【深度权重】 (Depth Weight) - 拒绝不同深度的像素
+                float depthDiff = abs(centerLinearDepth - sampleLinearDepth);
+                // 使用 exp 衰减会让边缘切割得更锐利
+                float depthWeight = exp(-depthDiff * depthSensitivity);
+                // 或者使用更温和的: 1.0 / (1.0 + depthDiff * depthSensitivity);
+
+                // C. 【颜色权重】 (Color Weight) - 拒绝不同颜色的像素
+                float3 colorDiffVec = centerColor - sampleColor;
+                // 计算颜色距离的平方 (R^2 + G^2 + B^2)
+                float colorDiffSq = dot(colorDiffVec, colorDiffVec); 
+                // 颜色差异越大，权重越小
+                float colorWeight = exp(-colorDiffSq * colorSensitivity);
+
+                // D. 【综合权重】
+                float totalWeight = spatialWeight * depthWeight * colorWeight;
+
+                // 累加
+                finalColor += sampleColor * totalWeight;
+                sumWeight += totalWeight;
+            }
+        }
+
+        // 归一化
+        if (sumWeight > 0.0001)
+            finalColor /= sumWeight;
+        else
+            finalColor = centerColor; // 容错：如果所有邻居都被拒绝了，保持原样
+        
+        // ---------------------------------------------------------
+        // 4. 最终混合
+        // ---------------------------------------------------------
+        return float4(lerp(centerColor, finalColor, blurFactor), 1.0);
     }
     ENDHLSL
 

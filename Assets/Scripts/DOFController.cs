@@ -33,6 +33,7 @@ public class DOFController : MonoBehaviour
     private MyGaussianBlurSinglePass myGaussianBlur; // 缓存自定义效果的引用
     private AntiDistortion antiDistortion;
     private Vector3 focusPosition;
+    private Transform lxTransform;
 
     // 在你的类顶部添加这个变量
     private float xeryonTimer = 0.0f;
@@ -170,6 +171,7 @@ public class DOFController : MonoBehaviour
         }
 
         ok = false;
+        lxTransform = GameObject.Find("gemstone")?.GetComponent<Transform>();
     }
 
     // 写入操作
@@ -202,7 +204,7 @@ public class DOFController : MonoBehaviour
     {
         return (x - minV) / (maxV - minV) * 600;
     }
-
+    
     private float CacMaxCoCSize(float focalLength, float kernelRadius, ref Camera mainCamera)
     {
         if (focalLength <= 0 || kernelRadius < 0 || mainCamera == null)
@@ -211,7 +213,10 @@ public class DOFController : MonoBehaviour
             return 4e-5f;
         }
 
+        
         return 4e-5f;
+        float k = Mathf.Clamp((lxTransform.position.y - 2.794f) / (4.0f - 2.794f), 0.0f, 1.0f);
+        return Mathf.Lerp(4e-5f, 2e-3f, k);
         
         int rtHeight = mainCamera.pixelHeight; // 渲染目标宽度（像素）
         float fov = mainCamera.fieldOfView;  // 相机视场角（度，默认垂直视场角）
@@ -222,7 +227,7 @@ public class DOFController : MonoBehaviour
         float pixelWorldSize = focusPlaneHeight / rtHeight; // 像素世界尺寸（米/像素）
         float blurRangePixel = 2 * kernelRadius;
         
-        float maxCoCSize = blurRangePixel * pixelWorldSize * 0.00002f;
+        float maxCoCSize = blurRangePixel * pixelWorldSize * 0.00004f;
         
         Debug.Log($"Max CoC Size = {maxCoCSize} meter");
         return maxCoCSize;
@@ -249,6 +254,7 @@ public class DOFController : MonoBehaviour
 
     void SetXeryon(int value, float depth = 1.0f)
     {
+        return;
         lastStartTime = Time.realtimeSinceStartup * 1000.0f;
         
         curItem.curDepth = depth;
@@ -297,6 +303,7 @@ public class DOFController : MonoBehaviour
         itemList.Add(curItem);
         //Debug.Log("focus game object's depth = " + depth);
 
+        SetDepthForBlurPass(depth);
         // --- 2. 使用计时器控制 SetXeryon ---
         xeryonTimer += Time.deltaTime; // 累加每帧的时间
 

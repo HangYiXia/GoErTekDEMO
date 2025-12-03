@@ -255,31 +255,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   eyeDist:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.1
   fovWidth:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 20
   fovHeight:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 20
   screenWidth:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 100
   screenHeight:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 100
   xeryonValue:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0
   kR:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: {x: 1, y: 1, z: 1}
   kG:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: {x: 1, y: 1, z: 1}
   kB:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: {x: 1, y: 1, z: 1}
   enabled:
     m_OverrideState: 1
@@ -541,7 +541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7119cb5cd407e5f4dad431ea37f55b17, type: 3}
   m_Name: MyGaussianBlurSinglePass
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   radius:
     m_OverrideState: 1
     m_Value: 60
@@ -556,7 +556,7 @@ MonoBehaviour:
     m_Value: 0.002
   maxCoCsize:
     m_OverrideState: 1
-    m_Value: 0.000024
+    m_Value: 1
   enabled:
     m_OverrideState: 1
     m_Value: 1
