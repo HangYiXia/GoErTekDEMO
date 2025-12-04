@@ -98,7 +98,7 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
 
     bool FloatEqual(float a, float b)
     {
-        return abs(a - b) < 1e-5f;
+        return abs(a - b) < 1e-7f;
     }
 
     float CacCoCSize_V2(float linearEyeDepth)
@@ -198,6 +198,10 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         return float4(lerp(oriColor, blurColor, blurFactor), 1.0);
     }
 
+    bool isSkyByRawDepth(float rawDepth)
+    {
+        return FloatEqual(rawDepth, 0.0f);
+    }
     float4 GaussianBlur_V2(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
@@ -209,12 +213,12 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         float sum = 0.0;
 
         // --- 1. 获取中心点信息 (提前获取oriColor用于对比) ---
-        float depth = LoadCameraDepth(input.positionCS.xy);
+        float rawDepth = LoadCameraDepth(input.positionCS.xy);
         float3 oriColor = LOAD_TEXTURE2D_X(_MainTex, input.texcoord * _ScreenSize.xy).rgb;
         
         // 线性深度转化
-        float linearDepth = LinearEyeDepth(depth, _ZBufferParams);
-        bool isSky = FloatEqual(depth, 0.0f); // 注意：反向Z一般Sky是0，非反向Z可能是1，这里沿用你的逻辑
+        float linearDepth = LinearEyeDepth(rawDepth, _ZBufferParams);
+        bool isSky = isSkyByRawDepth(rawDepth); // 注意：反向Z一般Sky是0，非反向Z可能是1，这里沿用你的逻辑
         
         // --- 2. 计算模糊混合因子 ---
         // 修改点：如果是Sky，我们强制给一个模糊强度（例如1.0或自定义），否则原逻辑是0导致看不见模糊
@@ -253,6 +257,11 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
                     float depthDiff = abs(linearDepth - sampleLinearDepth);
                     float colorDiff = length(oriColor - sampleColor);
 
+                    if (isSkyByRawDepth(sampleDepthRaw))
+                    {
+                        //colorDiff = 0.0f;
+                    }
+                    
                     // 3. 计算双边权重 (高斯分布)
                     // 深度权重：差异越大，权重越趋近0
                     float w_depth = exp(-(depthDiff * depthDiff) / (2.0 * sigmaDepth * sigmaDepth));
@@ -283,7 +292,7 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
             ZWrite Off ZTest Always Blend Off Cull Off
             HLSLPROGRAM
             #pragma vertex Vert
-            #pragma fragment GaussianBlur_V2
+            #pragma fragment GaussianBlur
             ENDHLSL
         }
     }

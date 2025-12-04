@@ -6,7 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="c2e99a5c-4b05-4c71-9b63-fb5a321e62af" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Arts/Awards Pack/Materials/awardsGold_mat.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Arts/Awards Pack/Materials/awardsGold_mat.mat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/DOFController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/DOFController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Shaders/MyDoF3/GaussianBlurSinglePass.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shaders/MyDoF3/GaussianBlurSinglePass.shader" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,7 +116,7 @@
       <workItem from="1764487428563" duration="9636000" />
       <workItem from="1764652813493" duration="831000" />
       <workItem from="1764760997060" duration="10659000" />
-      <workItem from="1764820231227" duration="1690000" />
+      <workItem from="1764820231227" duration="7437000" />
     </task>
     <servers />
   </component>

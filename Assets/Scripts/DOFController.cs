@@ -184,6 +184,8 @@ public class DOFController : MonoBehaviour
         return distance < eps;
     }
     
+    
+    
     // 写入操作
     public void SetXeryonSettingState(bool state)
     {
@@ -299,10 +301,23 @@ public class DOFController : MonoBehaviour
     {
         antiDistortion.xeryonValue.value = value;
     }
+
+    float DisToDepth(float dis)
+    {
+        // dis = 4.828745, depth = 1000
+        // dis = 3.999639, depth = 29.59411
+        if (dis > 4.828745f) return 1000.0f;
+        float k = (dis - 3.999639f) / (4.828745f - 3.999639f);
+        float depth = Mathf.Lerp(29.59411f, 1000.0f, k);
+        return depth;
+    }
+    
     void Update()
     {
         focusPosition = useEyeTracking ? eyeTrackingPosition : focusGameObject.GetComponent<Transform>().position;
         float depth = CalcDepthFromDOFCamera(dofCamera, focusPosition);
+        
+        
         // 刚开始聚焦在无穷远
         if (!hasNeared && !IsNearToGoBaby(4.0f))
         {
@@ -313,8 +328,8 @@ public class DOFController : MonoBehaviour
         {
             hasNeared = true;
         }
-        
-        //depth = 1000.0f;
+        Debug.Log("depth = " + depth);
+
         curItem.opTime = 0;
         curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         curItem.curDepth = depth;
@@ -322,7 +337,6 @@ public class DOFController : MonoBehaviour
         curItem.antiDistortionTime = antiDistortion.GetGpuExecTimeMs();
         curItem.state = GetXeryonSettingState() ? "Setting" : "Idle";
         itemList.Add(curItem);
-        //Debug.Log("focus game object's depth = " + depth);
 
         SetDepthForBlurPass(depth);
         // --- 2. 使用计时器控制 SetXeryon ---
