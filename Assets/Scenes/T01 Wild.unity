@@ -643,6 +643,7 @@ MonoBehaviour:
     - {fileID: 0}
     - {fileID: 11400000, guid: e2296d86628ed0c4ca63aeef39fe3cb3, type: 2}
     - {fileID: 11400000, guid: d6cff62ba12154348a246f2c25a53705, type: 2}
+    - {fileID: 11400000, guid: f2cb420e98ba41c429d60abdd795ed54, type: 2}
     m_Events:
     - m_PersistentCalls:
         m_Calls:
@@ -684,6 +685,20 @@ MonoBehaviour:
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: EndRun
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 184728007}
+          m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+          m_MethodName: SetTrigger
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: StartHanding
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!95 &184728007
@@ -2449,14 +2464,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 725716367}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0017779951, y: 0.65317416, z: 0.29269233, w: -0.6983492}
-  m_LocalPosition: {x: -0.016868735, y: 0.006202306, z: -0.015128136}
+  m_LocalRotation: {x: 0.17914353, y: -0.68481505, z: -0.15326485, w: 0.6895259}
+  m_LocalPosition: {x: 0.0017, y: 0.0046, z: -0.0207}
   m_LocalScale: {x: 0.41666654, y: 0.4166666, z: 0.4166664}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 693269962}
   m_Father: {fileID: 147589536}
-  m_LocalEulerAnglesHint: {x: -22.326, y: -80.874, z: -26.388}
+  m_LocalEulerAnglesHint: {x: 2.128, y: -90.122, z: -27.196}
 --- !u!95 &725716369
 Animator:
   serializedVersion: 5
