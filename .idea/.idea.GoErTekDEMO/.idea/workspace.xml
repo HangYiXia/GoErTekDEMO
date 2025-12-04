@@ -6,13 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c2e99a5c-4b05-4c71-9b63-fb5a321e62af" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GoErTekDEMO/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Arts/Awards Pack/Materials/awardsGold_mat.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Arts/Awards Pack/Materials/awardsGold_mat.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Arts/Materials/Treasure Chest/TreasureChestDissolveMat.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Arts/Materials/Treasure Chest/TreasureChestDissolveMat.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Arts/sequence.txt.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Arts/sequence.txt.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/T01 Wild.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/T01 Wild.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/T01 Wild/T1WildSkyVolume.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/T01 Wild/T1WildSkyVolume.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/DOFController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/DOFController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shaders/MyDoF3/GaussianBlurSinglePass.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shaders/MyDoF3/GaussianBlurSinglePass.shader" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +18,7 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b0b044832c86429e90c306261f4bbd83177a00/0b/a5e400bd/Camera.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/b0b044832c86429e90c306261f4bbd83177a00/5b/1a3ae00b/Vector3.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.render-pipelines.core@14.0.12/ShaderLibrary/Common.hlsl" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.valvesoftware.unity.openvr@970ac47786c4/Runtime/OpenVRLoader.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
@@ -119,6 +114,7 @@
       <workItem from="1764487428563" duration="9636000" />
       <workItem from="1764652813493" duration="831000" />
       <workItem from="1764760997060" duration="10659000" />
+      <workItem from="1764820231227" duration="1690000" />
     </task>
     <servers />
   </component>

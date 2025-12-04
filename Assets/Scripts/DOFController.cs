@@ -35,6 +35,8 @@ public class DOFController : MonoBehaviour
     private Vector3 focusPosition;
     private Transform lxTransform;
 
+    private bool hasNeared = false;
+
     // 在你的类顶部添加这个变量
     private float xeryonTimer = 0.0f;
     public float xeryonInterval = 1.0f; // 方便以后修改间隔
@@ -174,6 +176,14 @@ public class DOFController : MonoBehaviour
         lxTransform = GameObject.Find("gemstone")?.GetComponent<Transform>();
     }
 
+    bool IsNearToGoBaby(float eps)
+    {
+        Vector3 deltaVec = lxTransform.position - focusGameObject.transform.position;
+        float distance = deltaVec.magnitude;
+        Debug.Log("distance = " + distance);
+        return distance < eps;
+    }
+    
     // 写入操作
     public void SetXeryonSettingState(bool state)
     {
@@ -293,7 +303,18 @@ public class DOFController : MonoBehaviour
     {
         focusPosition = useEyeTracking ? eyeTrackingPosition : focusGameObject.GetComponent<Transform>().position;
         float depth = CalcDepthFromDOFCamera(dofCamera, focusPosition);
+        // 刚开始聚焦在无穷远
+        if (!hasNeared && !IsNearToGoBaby(4.0f))
+        {
+            Debug.Log("focus on infinite");
+            depth = 1000.0f;
+        }
+        else
+        {
+            hasNeared = true;
+        }
         
+        //depth = 1000.0f;
         curItem.opTime = 0;
         curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         curItem.curDepth = depth;

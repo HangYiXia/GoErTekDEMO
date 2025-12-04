@@ -198,101 +198,80 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         return float4(lerp(oriColor, blurColor, blurFactor), 1.0);
     }
 
-    float4 GaussianBlur_BLFilter(Varyings input) : SV_Target
+    float4 GaussianBlur_V2(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
         float2 uv = input.texcoord;
-        uint2 centerCoord = input.positionCS.xy;
 
-        // ---------------------------------------------------------
-        // 1. 准备中心数据 (Center Data)
-        // ---------------------------------------------------------
-        // 深度
-        float centerDepth = LoadCameraDepth(centerCoord);
-        float centerLinearDepth = LinearEyeDepth(centerDepth, _ZBufferParams);
-        
-        // 颜色 (为了计算颜色差异，我们需要先拿到中心点的颜色)
-        float3 centerColor = LOAD_TEXTURE2D_X(_MainTex, centerCoord).rgb;
-
-        // 计算模糊强度
-        float blurFactor = CacBlurFactor_V3(centerLinearDepth);
-
-        // 【优化】早退
-        if(blurFactor < 0.01)
-        {
-            return float4(centerColor, 1.0);
-        }
-
-        // ---------------------------------------------------------
-        // 2. 参数设置
-        // ---------------------------------------------------------
         float sigma = max(_Radius * 0.25, 0.5);
         int halfWidth = min((int)(sigma * 3.0), 10);  
-        
-        float3 finalColor = 0.0;
-        float sumWeight = 0.0;
+        float3 blurColor = 0.0;
+        float sum = 0.0;
 
-        // [参数] 深度敏感度：控制前景/背景分离
-        float depthSensitivity = 0.0; 
+        // --- 1. 获取中心点信息 (提前获取oriColor用于对比) ---
+        float depth = LoadCameraDepth(input.positionCS.xy);
+        float3 oriColor = LOAD_TEXTURE2D_X(_MainTex, input.texcoord * _ScreenSize.xy).rgb;
         
-        // [参数] 颜色敏感度：控制是否保留纹理边缘
-        // 建议值：
-        // 0.0 = 不考虑颜色差异 (标准物理虚化)
-        // 1.0 ~ 10.0 = 抑制高光溢出，轻微保留边缘
-        // > 20.0 = 强烈的油画/磨皮效果，纹理内部不会糊
-        float colorSensitivity = 0.0; 
+        // 线性深度转化
+        float linearDepth = LinearEyeDepth(depth, _ZBufferParams);
+        bool isSky = FloatEqual(depth, 0.0f); // 注意：反向Z一般Sky是0，非反向Z可能是1，这里沿用你的逻辑
+        
+        // --- 2. 计算模糊混合因子 ---
+        // 修改点：如果是Sky，我们强制给一个模糊强度（例如1.0或自定义），否则原逻辑是0导致看不见模糊
+        // 如果你希望天空完全使用模糊结果，这里设为 1.0
+        float blurFactor = isSky ? 1.0f : CacBlurFactor_V3(linearDepth);
 
-        // ---------------------------------------------------------
-        // 3. 联合双边滤波循环 (Joint Bilateral Loop)
-        // ---------------------------------------------------------
+        // 定义双边滤波的敏感度参数 (可以提升为Uniform变量)
+        // 深度差异敏感度：值越小，对深度差异越敏感（越不容易跨越深度边缘模糊）
+        float sigmaDepth = 10.0f; 
+        // 颜色差异敏感度：值越小，对颜色差异越敏感
+        float sigmaColor = 0.2f;  
+
         for (int dy = -halfWidth; dy <= halfWidth; ++dy)
         {
             for (int dx = -halfWidth; dx <= halfWidth; ++dx)
             {
-                float2 offset = float2(dx, dy) * _MainTex_TexelSize.xy;
-                uint2 sampleCoords = uint2((uv + offset) * _ScreenSize.xy);
+                // 计算偏移坐标
+                float2 offsetUV = float2(dx, dy) * _MainTex_TexelSize.xy;
+                uint2 sampleCoord = uint2((uv + offsetUV) * _ScreenSize.xy);
+                
+                // 采样邻域颜色
+                float3 sampleColor = LOAD_TEXTURE2D_X(_MainTex, sampleCoord).rgb;
 
-                // A. 【空间权重】 (Spatial Weight) - 高斯分布
-                float distSq = dx*dx + dy*dy;
-                float spatialWeight = exp(-distSq / (2.0 * sigma * sigma));
+                // A. 基础高斯空间权重 (Spatial Weight)
+                float w = exp(-(dx*dx + dy*dy) / (2.0 * sigma * sigma));
 
-                // 获取采样点数据
-                float sampleDepth = LoadCameraDepth(sampleCoords);
-                float sampleLinearDepth = LinearEyeDepth(sampleDepth, _ZBufferParams);
-                float3 sampleColor = LOAD_TEXTURE2D_X(_MainTex, sampleCoords).rgb;
+                // B. 仅当 isSky 为 true 时，考虑颜色和深度差异 (Range Weight)
+                if (isSky)
+                {
+                    // 1. 采样邻域深度
+                    // 注意：需要根据当前像素坐标偏移去采深度
+                    float sampleDepthRaw = LoadCameraDepth(input.positionCS.xy + float2(dx, dy));
+                    float sampleLinearDepth = LinearEyeDepth(sampleDepthRaw, _ZBufferParams);
 
-                // B. 【深度权重】 (Depth Weight) - 拒绝不同深度的像素
-                float depthDiff = abs(centerLinearDepth - sampleLinearDepth);
-                // 使用 exp 衰减会让边缘切割得更锐利
-                float depthWeight = exp(-depthDiff * depthSensitivity);
-                // 或者使用更温和的: 1.0 / (1.0 + depthDiff * depthSensitivity);
+                    // 2. 计算差异
+                    float depthDiff = abs(linearDepth - sampleLinearDepth);
+                    float colorDiff = length(oriColor - sampleColor);
 
-                // C. 【颜色权重】 (Color Weight) - 拒绝不同颜色的像素
-                float3 colorDiffVec = centerColor - sampleColor;
-                // 计算颜色距离的平方 (R^2 + G^2 + B^2)
-                float colorDiffSq = dot(colorDiffVec, colorDiffVec); 
-                // 颜色差异越大，权重越小
-                float colorWeight = exp(-colorDiffSq * colorSensitivity);
+                    // 3. 计算双边权重 (高斯分布)
+                    // 深度权重：差异越大，权重越趋近0
+                    float w_depth = exp(-(depthDiff * depthDiff) / (2.0 * sigmaDepth * sigmaDepth));
+                    // 颜色权重：差异越大，权重越趋近0
+                    float w_color = exp(-(colorDiff * colorDiff) / (2.0 * sigmaColor * sigmaColor));
 
-                // D. 【综合权重】
-                float totalWeight = spatialWeight * depthWeight * colorWeight;
+                    // 叠加权重
+                    w *= w_depth * w_color;
+                }
 
-                // 累加
-                finalColor += sampleColor * totalWeight;
-                sumWeight += totalWeight;
+                blurColor += sampleColor * w;
+                sum += w;
             }
         }
-
-        // 归一化
-        if (sumWeight > 0.0001)
-            finalColor /= sumWeight;
-        else
-            finalColor = centerColor; // 容错：如果所有邻居都被拒绝了，保持原样
         
-        // ---------------------------------------------------------
-        // 4. 最终混合
-        // ---------------------------------------------------------
-        return float4(lerp(centerColor, finalColor, blurFactor), 1.0);
+        // 防止除以0 (极小概率sum为0)
+        blurColor /= max(sum, 0.0001f);
+
+        return float4(lerp(oriColor, blurColor, blurFactor), 1.0);
     }
     ENDHLSL
 
@@ -304,7 +283,7 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
             ZWrite Off ZTest Always Blend Off Cull Off
             HLSLPROGRAM
             #pragma vertex Vert
-            #pragma fragment GaussianBlur
+            #pragma fragment GaussianBlur_V2
             ENDHLSL
         }
     }
