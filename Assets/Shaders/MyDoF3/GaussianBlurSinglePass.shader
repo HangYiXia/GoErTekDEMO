@@ -135,6 +135,11 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         return CacAlphaByCoCSize(cocSize);
     }
 
+    bool isSkyByRawDepth(float rawDepth)
+    {
+        return FloatEqual(rawDepth, 0.0f);
+    }
+
     float4 GaussianBlur(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
@@ -147,10 +152,10 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
 
         
         // --- 计算模糊因子 ---
-        float depth = LoadCameraDepth(input.positionCS.xy);
-        bool isSky = FloatEqual(depth , 0.0f);
-        float linearDepth = LinearEyeDepth(depth, _ZBufferParams);
-        float blurFactor = isSky ? 0.0f : CacBlurFactor_V3(linearDepth);
+        float rawDepth = LoadCameraDepth(input.positionCS.xy);
+        bool isSky = isSkyByRawDepth(rawDepth);
+        float linearDepth = LinearEyeDepth(rawDepth, _ZBufferParams);
+        float blurFactor = CacBlurFactor_V3(linearDepth);
         
         for (int dy = -halfWidth; dy <= halfWidth; ++dy)
         {
@@ -194,14 +199,9 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         float linear01Depth = Linear01Depth(depth, _ZBufferParams);
         return float4(linear01Depth, linear01Depth, linear01Depth, 1.0);
         */
-        
         return float4(lerp(oriColor, blurColor, blurFactor), 1.0);
     }
-
-    bool isSkyByRawDepth(float rawDepth)
-    {
-        return FloatEqual(rawDepth, 0.0f);
-    }
+    
     float4 GaussianBlur_V2(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
@@ -220,10 +220,7 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
         float linearDepth = LinearEyeDepth(rawDepth, _ZBufferParams);
         bool isSky = isSkyByRawDepth(rawDepth); // 注意：反向Z一般Sky是0，非反向Z可能是1，这里沿用你的逻辑
         
-        // --- 2. 计算模糊混合因子 ---
-        // 修改点：如果是Sky，我们强制给一个模糊强度（例如1.0或自定义），否则原逻辑是0导致看不见模糊
-        // 如果你希望天空完全使用模糊结果，这里设为 1.0
-        float blurFactor = isSky ? 1.0f : CacBlurFactor_V3(linearDepth);
+        float blurFactor = CacBlurFactor_V3(linearDepth);
 
         // 定义双边滤波的敏感度参数 (可以提升为Uniform变量)
         // 深度差异敏感度：值越小，对深度差异越敏感（越不容易跨越深度边缘模糊）
@@ -248,6 +245,10 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
                 // B. 仅当 isSky 为 true 时，考虑颜色和深度差异 (Range Weight)
                 if (isSky)
                 {
+                    // 0.8867924 0.7976202 0.119912
+                    // 0.9811321 0.9175646 0.1882044
+                    // float3 lxColor = .5f * (float3(0.8867924, 0.7976202, 0.119912) + float3(0.9811321, 0.9175646, 0.1882044));
+                    
                     // 1. 采样邻域深度
                     // 注意：需要根据当前像素坐标偏移去采深度
                     float sampleDepthRaw = LoadCameraDepth(input.positionCS.xy + float2(dx, dy));
@@ -256,11 +257,6 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
                     // 2. 计算差异
                     float depthDiff = abs(linearDepth - sampleLinearDepth);
                     float colorDiff = length(oriColor - sampleColor);
-
-                    if (isSkyByRawDepth(sampleDepthRaw))
-                    {
-                        //colorDiff = 0.0f;
-                    }
                     
                     // 3. 计算双边权重 (高斯分布)
                     // 深度权重：差异越大，权重越趋近0
@@ -292,7 +288,7 @@ Shader "Hidden/Shader/GaussianBlurSinglePass"
             ZWrite Off ZTest Always Blend Off Cull Off
             HLSLPROGRAM
             #pragma vertex Vert
-            #pragma fragment GaussianBlur
+            #pragma fragment GaussianBlur_V2
             ENDHLSL
         }
     }

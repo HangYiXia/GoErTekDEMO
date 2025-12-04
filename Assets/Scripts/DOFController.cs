@@ -176,15 +176,17 @@ public class DOFController : MonoBehaviour
         lxTransform = GameObject.Find("gemstone")?.GetComponent<Transform>();
     }
 
-    bool IsNearToGoBaby(float eps)
+    float GetDisToGoBaby()
     {
         Vector3 deltaVec = lxTransform.position - focusGameObject.transform.position;
         float distance = deltaVec.magnitude;
-        Debug.Log("distance = " + distance);
-        return distance < eps;
+        return distance;
     }
     
-    
+    bool IsNearToGoBaby(float eps)
+    {
+        return GetDisToGoBaby() < eps;
+    }
     
     // 写入操作
     public void SetXeryonSettingState(bool state)
@@ -304,10 +306,15 @@ public class DOFController : MonoBehaviour
 
     float DisToDepth(float dis)
     {
-        // dis = 4.828745, depth = 1000
-        // dis = 3.999639, depth = 29.59411
-        if (dis > 4.828745f) return 1000.0f;
-        float k = (dis - 3.999639f) / (4.828745f - 3.999639f);
+        // 4.828745f
+        float startDis = 10.828745f;
+        float endDis = 3.999639f;
+        if (dis > startDis) return 1000.0f;
+    
+        // 1. 计算线性的归一化进度 0.0 ~ 1.0
+        float k = (dis - endDis) / (startDis - endDis);
+
+        // 3. 插值
         float depth = Mathf.Lerp(29.59411f, 1000.0f, k);
         return depth;
     }
@@ -316,8 +323,12 @@ public class DOFController : MonoBehaviour
     {
         focusPosition = useEyeTracking ? eyeTrackingPosition : focusGameObject.GetComponent<Transform>().position;
         float depth = CalcDepthFromDOFCamera(dofCamera, focusPosition);
-        
-        
+
+        /*
+        if(!hasNeared)depth = DisToDepth(GetDisToGoBaby());
+        if (IsNearToGoBaby(4.0f)) hasNeared = true;
+        */
+        /*
         // 刚开始聚焦在无穷远
         if (!hasNeared && !IsNearToGoBaby(4.0f))
         {
@@ -329,7 +340,8 @@ public class DOFController : MonoBehaviour
             hasNeared = true;
         }
         Debug.Log("depth = " + depth);
-
+        */
+        
         curItem.opTime = 0;
         curItem.curTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         curItem.curDepth = depth;
